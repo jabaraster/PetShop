@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+</head>
+<body>
+
+<wicket:extend>
+
+  <form wicket:id="form">
+    <div wicket:id="feedback"></div>
+    <ul>
+      <li>
+        <label>ペットの名前</label>
+        <input type="text" wicket:id="name" />
+      </li>
+      <li>
+        <label>ペットの種類</label>
+        <div wicket:id="category"></div>
+        <label>新しい種類</label>
+        <input type="text" wicket:id="newCategory" />
+      </li>
+      <li>
+        <div wicket:id="petImage"></div>
+      </li>
+      <li>
+        <label>単価</label>
+        <input type="number" wicket:id="unitPrice" />
+      </li>
+      <li>
+        <button wicket:id="submitter">送信</button>
+      </li>
+    </ul>
+  </form>
+
+</wicket:extend>
+
+</body>
+</html>
