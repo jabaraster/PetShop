@@ -79,7 +79,14 @@ public class EPetImageData extends EntityBase<EPetImageData> {
     /**
      * @return -
      */
-    public InputStream getData() {
+    public byte[] getData() {
+        return this.data.clone();
+    }
+
+    /**
+     * @return -
+     */
+    public InputStream getDataStream() {
         return new ByteArrayInputStream(this.data.clone());
     }
 

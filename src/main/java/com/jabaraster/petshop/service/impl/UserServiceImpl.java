@@ -1,17 +1,13 @@
 package com.jabaraster.petshop.service.impl;
 
-import jabara.general.ArgUtil;
-import jabara.general.Sort;
+import jabara.general.NotFound;
 import jabara.jpa.JpaDaoBase;
-
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
 import com.jabaraster.petshop.entity.ELoginPassword;
 import com.jabaraster.petshop.entity.EUser;
@@ -31,17 +27,11 @@ public class UserServiceImpl extends JpaDaoBase implements IUserService {
     }
 
     /**
-     * @see com.jabaraster.petshop.service.IUserService#getAll(jabara.general.Sort)
+     * @see com.jabaraster.petshop.service.IUserService#findById(long)
      */
     @Override
-    public List<EUser> getAll(final Sort pSort) {
-        ArgUtil.checkNull(pSort, "pSort"); //$NON-NLS-1$
-        final EntityManager em = getEntityManager();
-        final CriteriaBuilder builder = em.getCriteriaBuilder();
-        final CriteriaQuery<EUser> query = builder.createQuery(EUser.class);
-        final Root<EUser> root = query.from(EUser.class);
-        query.orderBy(convertOrder(pSort, builder, root));
-        return em.createQuery(query).getResultList();
+    public EUser findById(final long pId) throws NotFound {
+        return findByIdCore(EUser.class, pId);
     }
 
     /**

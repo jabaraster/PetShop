@@ -3,6 +3,8 @@
  */
 package com.jabaraster.petshop.entity;
 
+import jabara.general.ArgUtil;
+import jabara.general.NotFound;
 import jabara.jpa.entity.EntityBase;
 
 import java.util.ArrayList;
@@ -31,7 +33,7 @@ public class ECart extends EntityBase<ECart> {
      */
     @Getter
     @Setter
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, unique = true)
     protected EUser           user;
 
     /**
@@ -40,4 +42,36 @@ public class ECart extends EntityBase<ECart> {
     @Getter
     @OneToMany
     protected List<EOrder>    orders           = new ArrayList<>();
+
+    /**
+     * @param pUser -
+     */
+    public ECart(final EUser pUser) {
+        this.user = ArgUtil.checkNull(pUser, "pUser"); //$NON-NLS-1$
+    }
+
+    /**
+     * @param pOrder -
+     */
+    public void addOrder(final EOrder pOrder) {
+        ArgUtil.checkNull(pOrder, "pOrder"); //$NON-NLS-1$
+        this.orders.add(pOrder);
+
+    }
+
+    /**
+     * @param pPet -
+     * @return -
+     * @throws NotFound -
+     */
+    public EOrder findOrderByPet(final EPet pPet) throws NotFound {
+        ArgUtil.checkNull(pPet, "pPet"); //$NON-NLS-1$
+
+        for (final EOrder order : this.orders) {
+            if (order.getPet().equals(pPet)) {
+                return order;
+            }
+        }
+        throw NotFound.GLOBAL;
+    }
 }

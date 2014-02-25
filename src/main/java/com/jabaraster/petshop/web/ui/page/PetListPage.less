@@ -1,0 +1,37 @@
+@import "Common.less";
+
+@cellWidth: 300px;
+
+div.PetListPage {
+  legend {
+    margin-bottom: 10px;
+  }
+
+  img {
+    width: @cellWidth - 50;
+    border-radius: 3px;
+  }
+
+  ul {
+    
+
+    > li {
+      display: inline-block;
+      border: solid 1px rgba(100,100,100,.3);
+      border-radius: 6px;
+      background: rgba(255,255,255,.3);
+      margin-right: 0.5em;
+      margin-bottom: 0.5em;
+      width: @cellWidth;
+
+      label:before {
+        content: '¥ ';
+      }
+
+      fieldset {
+        border-radius: 6px;
+        padding: 10px;
+      }
+    }
+  }
+}

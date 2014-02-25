@@ -337,7 +337,7 @@ public class PetEditPage extends RestrictedPageBase {
                 return this.stream;
             }
             try {
-                this.stream = PetEditPage.this.petService.findImageDataByPet(PetEditPage.this.pet).getData();
+                this.stream = PetEditPage.this.petService.findImageDataByPet(PetEditPage.this.pet).getDataStream();
                 return this.stream;
             } catch (final NotFound e) {
                 throw new ResourceStreamNotFoundException();

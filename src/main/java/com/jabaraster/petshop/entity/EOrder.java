@@ -40,4 +40,18 @@ public class EOrder extends EntityBase<EOrder> {
      */
     @Column(nullable = false)
     protected int             quantity;
+
+    /**
+     * @param pPet -
+     */
+    public EOrder(final EPet pPet) {
+        this(pPet, 1);
+    }
+
+    /**
+     * 
+     */
+    public void incrementQuantity() {
+        this.quantity++;
+    }
 }
