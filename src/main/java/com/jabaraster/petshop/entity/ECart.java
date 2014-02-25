@@ -20,8 +20,6 @@ import lombok.Setter;
 /**
  * @author jabaraster
  */
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -31,12 +29,15 @@ public class ECart extends EntityBase<ECart> {
     /**
      * 
      */
+    @Getter
+    @Setter
     @JoinColumn(nullable = false)
     protected EUser           user;
 
     /**
      * 
      */
+    @Getter
     @OneToMany
     protected List<EOrder>    orders           = new ArrayList<>();
 }

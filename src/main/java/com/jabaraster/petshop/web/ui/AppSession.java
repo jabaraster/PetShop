@@ -5,20 +5,21 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.jabaraster.petshop.model.FailAuthentication;
-import com.jabaraster.petshop.model.LoginUser;
-import com.jabaraster.petshop.service.IAuthenticationService;
-import com.jabaraster.petshop.web.LoginUserHolder;
-
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.cycle.RequestCycle;
 
+import com.jabaraster.petshop.model.FailAuthentication;
+import com.jabaraster.petshop.model.LoginUser;
+import com.jabaraster.petshop.service.IAuthenticationService;
+import com.jabaraster.petshop.web.LoginUserHolder;
+
 /**
  * 
  */
 public class AppSession extends WebSession {
+    private static final long                serialVersionUID = 7779191958923243733L;
 
     private final AtomicReference<LoginUser> authenticated    = new AtomicReference<>();
 

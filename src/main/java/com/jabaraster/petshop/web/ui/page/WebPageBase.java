@@ -4,10 +4,6 @@ import jabara.general.ArgUtil;
 import jabara.wicket.IconHeaderItem;
 import jabara.wicket.JavaScriptUtil;
 import jabara.wicket.Models;
-import com.jabaraster.petshop.Environment;
-import com.jabaraster.petshop.web.ui.AppSession;
-import com.jabaraster.petshop.web.ui.WicketApplication;
-import com.jabaraster.petshop.web.ui.WicketApplication.Resource;
 
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -19,10 +15,17 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 
+import com.jabaraster.petshop.Environment;
+import com.jabaraster.petshop.web.ui.AppSession;
+import com.jabaraster.petshop.web.ui.WicketApplication;
+import com.jabaraster.petshop.web.ui.WicketApplication.Resource;
+import com.jabaraster.petshop.web.ui.component.BodyCssHeaderItem;
+
 /**
  *
  */
 public abstract class WebPageBase extends WebPage {
+    private static final long                        serialVersionUID  = -7105185519134177245L;
 
     private static final CssResourceReference        REF_BOOTSTRAP_CSS = new CssResourceReference(WebPageBase.class, "bootstrap/css/bootstrap.css"); //$NON-NLS-1$
     private static final CssResourceReference        REF_APP_CSS       = new CssResourceReference(WebPageBase.class, "App.css");                    //$NON-NLS-1$
@@ -44,6 +47,14 @@ public abstract class WebPageBase extends WebPage {
     protected WebPageBase(final PageParameters pParameters) {
         super(pParameters);
         this.add(getTitleLabel());
+    }
+
+    /**
+     * @return -
+     * @see org.apache.wicket.Component#getApplication()
+     */
+    public WicketApplication getPetShopApplication() {
+        return (WicketApplication) super.getApplication();
     }
 
     /**
@@ -90,6 +101,7 @@ public abstract class WebPageBase extends WebPage {
 
         pResponse.render(IconHeaderItem.forReference(WicketApplication.get().getSharedResourceReference(Resource.FAVICON)));
 
+        pResponse.render(BodyCssHeaderItem.get());
         pResponse.render(CssHeaderItem.forReference(REF_BOOTSTRAP_CSS));
         pResponse.render(CssHeaderItem.forReference(REF_APP_CSS));
 
@@ -97,4 +109,3 @@ public abstract class WebPageBase extends WebPage {
         pResponse.render(JavaScriptHeaderItem.forReference(REF_BOOTSTRAP_JS));
     }
 }
-

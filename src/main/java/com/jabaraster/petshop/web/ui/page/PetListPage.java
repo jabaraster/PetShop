@@ -27,7 +27,7 @@ import com.jabaraster.petshop.web.ui.component.AttributeColumn;
 /**
  * @author jabaraster
  */
-public class PetListPage extends WebPageBase {
+public class PetListPage extends RestrictedPageBase {
     private static final long                          serialVersionUID = -6810213540879254660L;
 
     @Inject

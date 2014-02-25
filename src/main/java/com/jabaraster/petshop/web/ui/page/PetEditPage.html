@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+</head>
+<body>
+
+<wicket:extend>
+
+  <form wicket:id="form">
+    <div wicket:id="feedback"></div>
+    <ul>
+      <li>
+        <label class="fieldLabel">ペットの名前</label>
+        <input type="text" wicket:id="name" />
+      </li>
+      <li>
+        <label class="fieldLabel">ペットの分類</label>
+        <div wicket:id="category" class="category"></div>
+        <label class="fieldLabel">ここにない分類</label>
+        <input type="text" wicket:id="newCategory" />
+      </li>
+      <li>
+        <label class="fieldLabel">単価</label>
+        <input type="number" wicket:id="unitPrice" />
+      </li>
+    </ul>
+  </form>
+  <form wicket:id="petImageForm">
+    <ul>
+      <li>
+        <label>ペットのイメージ画像</label>
+        <div wicket:id="petImage"></div>
+        <div wicket:id="petImageFeedback"></div>
+        <img wicket:id="currentImage" class="petImage" />
+      </li>
+    </ul>
+  </form>
+  <ul>
+    <li>
+      <button wicket:id="submitter" href="#" class="btn btn-primary">
+        <i class="glyphicon glyphicon-white glyphicon-ok"></i>
+        登録
+      </button>    </li>
+  </ul>
+
+</wicket:extend>
+
+</body>
+</html>

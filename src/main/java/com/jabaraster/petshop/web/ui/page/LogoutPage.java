@@ -9,6 +9,7 @@ import com.jabaraster.petshop.web.ui.AppSession;
  * 
  */
 public class LogoutPage extends WebPage {
+    private static final long serialVersionUID = -2053721850538318836L;
 
     /**
      * 

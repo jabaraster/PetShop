@@ -5,22 +5,28 @@ package com.jabaraster.petshop.web.ui.page;
 
 import jabara.general.ArgUtil;
 import jabara.general.Empty;
+import jabara.general.IoUtil;
 import jabara.general.NotFound;
+import jabara.general.io.DataOperation;
 import jabara.jpa.entity.EntityBase_;
+import jabara.wicket.ComponentCssHeaderItem;
 import jabara.wicket.ErrorClassAppender;
 import jabara.wicket.FileUploadPanel;
 import jabara.wicket.Models;
 import jabara.wicket.ValidatorUtil;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -28,10 +34,15 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
+import org.apache.wicket.markup.html.image.NonCachingImage;
+import org.apache.wicket.markup.html.panel.ComponentFeedbackPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.ResourceStreamResource;
+import org.apache.wicket.util.resource.AbstractResourceStream;
+import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
 import org.apache.wicket.util.string.StringValue;
 
 import com.jabaraster.petshop.entity.EPet;
@@ -46,11 +57,12 @@ import com.jabaraster.petshop.web.ui.component.RangeField;
 /**
  * @author jabaraster
  */
-public class EditPetPage extends AdministrationPageBase {
+public class PetEditPage extends RestrictedPageBase {
     private static final long         serialVersionUID = 4199480329927173656L;
 
     @Inject
     IPetService                       petService;
+
     @Inject
     IPetCategoryService               petCategoryService;
 
@@ -67,25 +79,30 @@ public class EditPetPage extends AdministrationPageBase {
     private RadioChoice<EPetCategory> category;
     private TextField<String>         newName;
     private RangeField<Integer>       unitPrice;
+
+    private Form<?>                   petImageForm;
     private FileUploadPanel           petImage;
+    private FeedbackPanel             petImageFeedback;
+    private NonCachingImage           currentImage;
+
     private AjaxButton                submitter;
 
     /**
      *
      */
-    public EditPetPage() {
+    public PetEditPage() {
         this(new PageParameters());
     }
 
     /**
      * @param pParameters -
      */
-    public EditPetPage(final PageParameters pParameters) {
+    public PetEditPage(final PageParameters pParameters) {
         ArgUtil.checkNull(pParameters, "pParameters"); //$NON-NLS-1$
 
         final StringValue p = pParameters.get(0);
         if (p.isEmpty() || p.isNull()) {
-            this.pet = new EPet();
+            this.pet = new EPet(null, null, 1_000);
         } else {
             try {
                 final long petId = p.toLong();
@@ -96,6 +113,17 @@ public class EditPetPage extends AdministrationPageBase {
         }
 
         this.add(getForm());
+        this.add(getPetImageForm());
+        this.add(getSubmitter());
+    }
+
+    /**
+     * @see com.jabaraster.petshop.web.ui.page.WebPageBase#renderHead(org.apache.wicket.markup.head.IHeaderResponse)
+     */
+    @Override
+    public void renderHead(final IHeaderResponse pResponse) {
+        super.renderHead(pResponse);
+        pResponse.render(ComponentCssHeaderItem.forType(PetEditPage.class));
     }
 
     /**
@@ -116,6 +144,14 @@ public class EditPetPage extends AdministrationPageBase {
         return this.category;
     }
 
+    private NonCachingImage getCurrentImage() {
+        if (this.currentImage == null) {
+            this.currentImage = new NonCachingImage("currentImage", new ResourceStreamResource(new PetImageResourceStream())); //$NON-NLS-1$
+            this.currentImage.add(AttributeModifier.append("class", getPetImageClassValue())); //$NON-NLS-1$
+        }
+        return this.currentImage;
+    }
+
     private FeedbackPanel getFeedback() {
         if (this.feedback == null) {
             this.feedback = new FeedbackPanel("feedback"); //$NON-NLS-1$
@@ -132,8 +168,6 @@ public class EditPetPage extends AdministrationPageBase {
             this.form.add(getCategory());
             this.form.add(getUnitPrice());
             this.form.add(getNewCategory());
-            this.form.add(getPetImage());
-            this.form.add(getSubmitter());
 
             this.form.add(new AbstractFormValidator() {
 
@@ -143,7 +177,7 @@ public class EditPetPage extends AdministrationPageBase {
                 }
 
                 @Override
-                public void validate(final Form<?> pForm) {
+                public void validate(@SuppressWarnings("unused") final Form<?> pForm) {
                     if (isBlank(getCategory().getValue()) && isBlank(getNewCategory().getValue())) {
                         this.error(getCategory(), "categoryIsEmpty"); //$NON-NLS-1$
                     }
@@ -175,12 +209,14 @@ public class EditPetPage extends AdministrationPageBase {
 
                 @Override
                 protected void onUploadError(final AjaxRequestTarget pTarget, @SuppressWarnings("unused") final Form<?> pForm) {
-                    EditPetPage.this.handler.onPetImageUploadError(pTarget);
+                    PetEditPage.this.handler.onPetImageUploadError(pTarget);
                 }
 
+                @SuppressWarnings("nls")
                 @Override
                 protected void onUploadSubmit(final AjaxRequestTarget pTarget, @SuppressWarnings("unused") final Form<?> pForm) {
-                    EditPetPage.this.handler.onPetImageUploadSubmit(pTarget);
+                    PetEditPage.this.handler.onPetImageUploadSubmit(pTarget);
+                    pTarget.appendJavaScript("$('img.petImage').removeClass('noImage').addClass('hasImage');");
                 }
             };
             this.petImage.getFile().add(ContentTypeValidator.type("image", "画像")); //$NON-NLS-1$//$NON-NLS-2$
@@ -188,18 +224,39 @@ public class EditPetPage extends AdministrationPageBase {
         return this.petImage;
     }
 
+    private String getPetImageClassValue() {
+        return getPetImage().getDataOperation().hasData() ? "hasIimage" : "noImage"; //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    private FeedbackPanel getPetImageFeedback() {
+        if (this.petImageFeedback == null) {
+            this.petImageFeedback = new ComponentFeedbackPanel("petImageFeedback", getPetImage().getFile()); //$NON-NLS-1$
+        }
+        return this.petImageFeedback;
+    }
+
+    private Form<?> getPetImageForm() {
+        if (this.petImageForm == null) {
+            this.petImageForm = new Form<>("petImageForm"); //$NON-NLS-1$
+            this.petImageForm.add(getPetImage());
+            this.petImageForm.add(getPetImageFeedback());
+            this.petImageForm.add(getCurrentImage());
+        }
+        return this.petImageForm;
+    }
+
     @SuppressWarnings("serial")
     private AjaxButton getSubmitter() {
         if (this.submitter == null) {
-            this.submitter = new IndicatingAjaxButton("submitter") { //$NON-NLS-1$
+            this.submitter = new IndicatingAjaxButton("submitter", getForm()) { //$NON-NLS-1$
                 @Override
                 protected void onError(final AjaxRequestTarget pTarget, @SuppressWarnings("unused") final Form<?> pForm) {
-                    EditPetPage.this.handler.onError(pTarget);
+                    PetEditPage.this.handler.onError(pTarget);
                 }
 
                 @Override
-                protected void onSubmit(final AjaxRequestTarget pTarget, @SuppressWarnings("unused") final Form<?> pForm) {
-                    EditPetPage.this.handler.onSubmit(pTarget);
+                protected void onSubmit(@SuppressWarnings("unused") final AjaxRequestTarget pTarget, @SuppressWarnings("unused") final Form<?> pForm) {
+                    PetEditPage.this.handler.onSubmit();
                 }
             };
         }
@@ -234,22 +291,59 @@ public class EditPetPage extends AdministrationPageBase {
         }
 
         void onPetImageUploadError(final AjaxRequestTarget pTarget) {
-            pTarget.add(getFeedback());
+            pTarget.add(getPetImageFeedback());
         }
 
         void onPetImageUploadSubmit(final AjaxRequestTarget pTarget) {
-            // TODO Auto-generated method stub
-
+            pTarget.add(getPetImageFeedback());
+            pTarget.add(getCurrentImage());
         }
 
-        void onSubmit(final AjaxRequestTarget pTarget) {
-            final String newCategoryName = getNewCategory().getModelObject();
-            if (isBlank(newCategoryName)) {
-                EditPetPage.this.petService.register(EditPetPage.this.pet);
-            } else {
-                EditPetPage.this.petService.register(EditPetPage.this.pet, newCategoryName);
+        void onSubmit() {
+            try {
+                final String newCategoryName = getNewCategory().getModelObject();
+                if (isBlank(newCategoryName)) {
+                    PetEditPage.this.petService.register(PetEditPage.this.pet, getPetImage().getDataOperation());
+                } else {
+                    PetEditPage.this.petService.register(PetEditPage.this.pet, newCategoryName, getPetImage().getDataOperation());
+                }
+                setResponsePage(getPetShopApplication().getPetListPage());
+
+            } finally {
+                getPetImage().destroyCurrentUploadFile();
             }
         }
+    }
+
+    private class PetImageResourceStream extends AbstractResourceStream {
+        private static final long serialVersionUID = -7606860827730168899L;
+
+        private InputStream       stream;
+
+        @Override
+        public void close() {
+            IoUtil.close(this.stream);
+            this.stream = null;
+        }
+
+        @Override
+        public InputStream getInputStream() throws ResourceStreamNotFoundException {
+            if (this.stream != null) {
+                return this.stream;
+            }
+            final DataOperation dataOperation = getPetImage().getDataOperation();
+            if (dataOperation.hasData()) {
+                this.stream = dataOperation.getData().getInputStream();
+                return this.stream;
+            }
+            try {
+                this.stream = PetEditPage.this.petService.findImageDataByPet(PetEditPage.this.pet).getData();
+                return this.stream;
+            } catch (final NotFound e) {
+                throw new ResourceStreamNotFoundException();
+            }
+        }
+
     }
 
 }

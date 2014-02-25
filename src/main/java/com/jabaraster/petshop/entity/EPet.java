@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,7 +23,7 @@ import lombok.ToString;
  * @author jabaraster
  */
 @Getter
-@Setter
+@Setter()
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
@@ -41,6 +42,7 @@ public class EPet extends EntityBase<EPet> {
      * 
      */
     @NotNull
+    @Size(min = 1, max = MAX_CHAR_COUNT_NAME)
     @Column(nullable = false, length = MAX_CHAR_COUNT_NAME * 3)
     protected String                    name;
 

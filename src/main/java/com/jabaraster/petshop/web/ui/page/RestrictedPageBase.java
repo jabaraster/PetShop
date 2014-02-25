@@ -7,19 +7,24 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 import com.jabaraster.petshop.Environment;
-import com.jabaraster.petshop.web.ui.component.BodyCssHeaderItem;
+import com.jabaraster.petshop.web.ui.WicketApplication;
+import com.jabaraster.petshop.web.ui.WicketApplication.MenuInfo;
 
 /**
  *
  */
 public abstract class RestrictedPageBase extends WebPageBase {
+    private static final long  serialVersionUID = 992616713060555L;
 
-    private Label             applicationName;
-    private Link<?>           goTop;
-    private Link<?>           goLogout;
+    private Label              applicationName;
+    private Link<?>            goTop;
+    private Link<?>            goLogout;
+    private ListView<MenuInfo> menus;
 
     /**
      * 
@@ -35,6 +40,7 @@ public abstract class RestrictedPageBase extends WebPageBase {
         super(pParameters);
         this.add(getGoTop());
         this.add(getGoLogout());
+        this.add(getMenus());
     }
 
     /**
@@ -43,7 +49,6 @@ public abstract class RestrictedPageBase extends WebPageBase {
     @Override
     public void renderHead(final IHeaderResponse pResponse) {
         super.renderHead(pResponse);
-        pResponse.render(BodyCssHeaderItem.get());
         pResponse.render(ComponentCssHeaderItem.forType(RestrictedPageBase.class));
     }
 
@@ -72,5 +77,21 @@ public abstract class RestrictedPageBase extends WebPageBase {
             this.goTop.add(getApplicationName());
         }
         return this.goTop;
+    }
+
+    @SuppressWarnings("serial")
+    private ListView<MenuInfo> getMenus() {
+        if (this.menus == null) {
+            this.menus = new ListView<WicketApplication.MenuInfo>("menus", getPetShopApplication().getMenus()) { //$NON-NLS-1$
+                @Override
+                protected void populateItem(final ListItem<MenuInfo> pItem) {
+                    final MenuInfo menu = pItem.getModelObject();
+                    final Link<?> goPage = new BookmarkablePageLink<>("goPage", menu.getPageType()); //$NON-NLS-1$
+                    goPage.add(new Label("label", menu.getTitleModel())); //$NON-NLS-1$
+                    pItem.add(goPage);
+                }
+            };
+        }
+        return this.menus;
     }
 }

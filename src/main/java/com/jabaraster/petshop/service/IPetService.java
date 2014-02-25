@@ -4,11 +4,13 @@
 package com.jabaraster.petshop.service;
 
 import jabara.general.NotFound;
+import jabara.general.io.DataOperation;
 
 import java.util.List;
 
 import com.google.inject.ImplementedBy;
 import com.jabaraster.petshop.entity.EPet;
+import com.jabaraster.petshop.entity.EPetImageData;
 import com.jabaraster.petshop.service.impl.PetServiceImpl;
 
 /**
@@ -26,14 +28,16 @@ public interface IPetService {
 
     /**
      * @param pPet -
+     * @param pImageDataOperation -
      */
-    void register(final EPet pPet);
+    void register(final EPet pPet, final DataOperation pImageDataOperation);
 
     /**
      * @param pPet -
      * @param pNewCategoryName -
+     * @param pImageDataOperation -
      */
-    void register(final EPet pPet, final String pNewCategoryName);
+    void register(final EPet pPet, final String pNewCategoryName, final DataOperation pImageDataOperation);
 
     /**
      * @param pFirst -
@@ -48,4 +52,11 @@ public interface IPetService {
      * @return -
      */
     long countAll();
+
+    /**
+     * @param pPet -
+     * @return -
+     * @throws NotFound -
+     */
+    EPetImageData findImageDataByPet(final EPet pPet) throws NotFound;
 }

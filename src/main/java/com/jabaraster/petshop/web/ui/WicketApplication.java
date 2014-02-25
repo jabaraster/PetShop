@@ -3,12 +3,19 @@ package com.jabaraster.petshop.web.ui;
 import jabara.general.ArgUtil;
 import jabara.wicket.LoginPageInstantiationAuthorizer;
 import jabara.wicket.MarkupIdForceOutputer;
+import jabara.wicket.Models;
+
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.Session;
 import org.apache.wicket.core.util.resource.UrlResourceStream;
 import org.apache.wicket.guice.GuiceComponentInjector;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
@@ -21,19 +28,23 @@ import org.apache.wicket.util.time.Duration;
 
 import com.google.inject.Injector;
 import com.jabaraster.petshop.web.ui.page.AdministrationPageBase;
-import com.jabaraster.petshop.web.ui.page.EditPetPage;
 import com.jabaraster.petshop.web.ui.page.LoginPage;
 import com.jabaraster.petshop.web.ui.page.LogoutPage;
+import com.jabaraster.petshop.web.ui.page.PetEditPage;
 import com.jabaraster.petshop.web.ui.page.PetListPage;
 import com.jabaraster.petshop.web.ui.page.RestrictedPageBase;
-import com.jabaraster.petshop.web.ui.page.TopPage;
+import com.jabaraster.petshop.web.ui.page.WebPageBase;
 
 /**
  *
  */
 public class WicketApplication extends WebApplication {
 
-    private static final String       ENC = "UTF-8";   //$NON-NLS-1$
+    private static final String       ENC    = "UTF-8";  //$NON-NLS-1$
+
+    private static List<MenuInfo>     _menus = Collections.unmodifiableList(Arrays.asList(new MenuInfo[] { //
+                                                     new MenuInfo(PetEditPage.class, Models.readOnly("ペット登録")) // //$NON-NLS-1$
+                                                     }));
 
     private final IProvider<Injector> injectorProvider;
 
@@ -50,7 +61,7 @@ public class WicketApplication extends WebApplication {
      */
     @Override
     public Class<? extends Page> getHomePage() {
-        return TopPage.class;
+        return PetListPage.class;
     }
 
     /**
@@ -58,6 +69,22 @@ public class WicketApplication extends WebApplication {
      */
     public Injector getInjector() {
         return this.injectorProvider.get();
+    }
+
+    /**
+     * @return -
+     */
+    @SuppressWarnings("static-method")
+    public List<MenuInfo> getMenus() {
+        return _menus;
+    }
+
+    /**
+     * @return -
+     */
+    @SuppressWarnings("static-method")
+    public Class<? extends WebPage> getPetListPage() {
+        return PetListPage.class;
     }
 
     /**
@@ -111,7 +138,7 @@ public class WicketApplication extends WebApplication {
 
             @Override
             protected Class<? extends Page> getFirstPageType() {
-                return TopPage.class;
+                return PetListPage.class;
             }
 
             @Override
@@ -146,7 +173,7 @@ public class WicketApplication extends WebApplication {
 
         this.mountPage("pet/", PetListPage.class); //$NON-NLS-1$
         this.mountPage("pet/index", PetListPage.class); //$NON-NLS-1$
-        this.mountPage("pet/edit", EditPetPage.class); //$NON-NLS-1$
+        this.mountPage("pet/edit", PetEditPage.class); //$NON-NLS-1$
     }
 
     private void mountResource(final Resource pResource, final String pFilePath, final Duration pCacheDuration) {
@@ -174,6 +201,36 @@ public class WicketApplication extends WebApplication {
      */
     public static WicketApplication get() {
         return (WicketApplication) WebApplication.get();
+    }
+
+    /**
+     * @author jabaraster
+     */
+    public static class MenuInfo implements Serializable {
+        private static final long                  serialVersionUID = 1620487003317541303L;
+
+        private final IModel<String>               titleModel;
+        private final Class<? extends WebPageBase> pageType;
+
+        MenuInfo(final Class<? extends WebPageBase> pPageType, final IModel<String> pTitleModel) {
+            this.titleModel = pTitleModel;
+            this.pageType = pPageType;
+        }
+
+        /**
+         * @return pageTypeを返す.
+         */
+        public Class<? extends WebPageBase> getPageType() {
+            return this.pageType;
+        }
+
+        /**
+         * @return titleModelを返す.
+         */
+        public IModel<String> getTitleModel() {
+            return this.titleModel;
+        }
+
     }
 
     /**

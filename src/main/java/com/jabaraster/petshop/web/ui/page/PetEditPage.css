@@ -1,0 +1,1 @@
+@charset "UTF-8";li>label.fieldLabel{width:120px;text-align:right;margin-bottom:2em}li>label.fieldLabel:after{content:'：'}img.noImage{display:none}img.hasImage{width:300px;displa:block}div.category{display:inline-block}div.category>br{display:none}div.category>label{margin-right:1em}button.deleter,button.restorer{display:none}

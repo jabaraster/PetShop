@@ -1,0 +1,35 @@
+@import "Common.less";
+
+li {
+	> label.fieldLabel {
+	  width: 120px;
+	  text-align: right;
+	  margin-bottom: 2em;
+	}
+	> label.fieldLabel:after {
+	  content: '：';
+	}
+}
+
+img.noImage {
+    display: none;
+}
+img.hasImage {
+    width: 300px;
+    displa: block;
+}
+
+div.category {
+	display: inline-block;
+
+	> br {
+	  display: none;
+	}
+	> label {
+	  margin-right: 1em;
+	}
+}
+
+button.deleter, button.restorer {
+	display: none;
+}

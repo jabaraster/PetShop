@@ -30,6 +30,7 @@ import com.jabaraster.petshop.web.ui.AppSession;
  */
 @SuppressWarnings("synthetic-access")
 public class LoginPage extends WebPageBase {
+    private static final long serialVersionUID = -549716745755288187L;
 
     private final Handler     handler          = new Handler();
 
@@ -65,23 +66,6 @@ public class LoginPage extends WebPageBase {
         return Models.readOnly(getString("pageTitle")); //$NON-NLS-1$
     }
 
-    private Label getApplicationName() {
-        if (this.applicationName == null) {
-            this.applicationName = new Label("applicationName", Environment.getApplicationName()); //$NON-NLS-1$
-        }
-        return this.applicationName;
-    }
-
-    private StatelessForm<?> getForm() {
-        if (this.form == null) {
-            this.form = new StatelessForm<>("form"); //$NON-NLS-1$
-            this.form.add(getUserId());
-            this.form.add(getPassword());
-            this.form.add(getSubmitter());
-        }
-        return this.form;
-    }
-
     PasswordTextField getPassword() {
         if (this.password == null) {
             this.password = new PasswordTextField("password", Models.of(Empty.STRING)); //$NON-NLS-1$
@@ -115,7 +99,25 @@ public class LoginPage extends WebPageBase {
         return this.userId;
     }
 
+    private Label getApplicationName() {
+        if (this.applicationName == null) {
+            this.applicationName = new Label("applicationName", Environment.getApplicationName()); //$NON-NLS-1$
+        }
+        return this.applicationName;
+    }
+
+    private StatelessForm<?> getForm() {
+        if (this.form == null) {
+            this.form = new StatelessForm<>("form"); //$NON-NLS-1$
+            this.form.add(getUserId());
+            this.form.add(getPassword());
+            this.form.add(getSubmitter());
+        }
+        return this.form;
+    }
+
     private class Handler implements Serializable {
+        private static final long        serialVersionUID   = -5583450382246308222L;
 
         private final ErrorClassAppender errorClassAppender = new ErrorClassAppender(Models.readOnly("error")); //$NON-NLS-1$
 
