@@ -3,22 +3,15 @@
  */
 package com.jabaraster.petshop.service.impl;
 
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.core.Is.is;
-
-import jabara.general.Sort;
-import jabara.jpa.entity.EntityBase_;
-
 import javax.persistence.EntityManagerFactory;
-
-import com.jabaraster.petshop.WebStarter;
-import com.jabaraster.petshop.WebStarter.Mode;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
+
+import com.jabaraster.petshop.WebStarter;
+import com.jabaraster.petshop.WebStarter.Mode;
 
 /**
  * @author jabaraster
@@ -49,14 +42,14 @@ public class UserServiceImplTest {
                                                           }
                                                       };
 
-        /**
-         * 
-         */
-        @SuppressWarnings("boxing")
-        @Test
-        public void getAllの結果が0件() {
-            final int actual = this.tool.getSut().getAll(Sort.asc(EntityBase_.id.getName())).size();
-            assertThat(actual, is(0));
-        }
+        // /**
+        // *
+        // */
+        // @SuppressWarnings("boxing")
+        // @Test
+        // public void getAllの結果が0件() {
+        // final int actual = this.tool.getSut().getAll(Sort.asc(EntityBase_.id.getName())).size();
+        // assertThat(actual, is(0));
+        // }
     }
 }
