@@ -1,15 +1,19 @@
 package com.jabaraster.petshop.web.ui.page;
 
-import jabara.general.ArgUtil;
+import jabara.wicket.ComponentCssHeaderItem;
 import jabara.wicket.IconHeaderItem;
 import jabara.wicket.JavaScriptUtil;
 import jabara.wicket.Models;
 
+import org.apache.wicket.Application;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.CssResourceReference;
@@ -33,6 +37,9 @@ public abstract class WebPageBase extends WebPage {
                                                                                "bootstrap/js/bootstrap.js");                                        //$NON-NLS-1$
 
     private Label                                    titleLabel;
+    private Label                                    applicationName;
+    private Link<?>                                  goTop;
+    private Panel                                    rightAlignMenu;
 
     /**
      * 
@@ -47,6 +54,8 @@ public abstract class WebPageBase extends WebPage {
     protected WebPageBase(final PageParameters pParameters) {
         super(pParameters);
         this.add(getTitleLabel());
+        this.add(getGoTop());
+        this.add(getRightAlignMenu());
     }
 
     /**
@@ -71,7 +80,35 @@ public abstract class WebPageBase extends WebPage {
     @Override
     public void renderHead(final IHeaderResponse pResponse) {
         super.renderHead(pResponse);
-        renderCommonHead(pResponse);
+
+        pResponse.render(IconHeaderItem.forReference(WicketApplication.get().getSharedResourceReference(Resource.FAVICON)));
+
+        pResponse.render(BodyCssHeaderItem.get());
+        pResponse.render(CssHeaderItem.forReference(REF_BOOTSTRAP_CSS));
+        pResponse.render(CssHeaderItem.forReference(REF_APP_CSS));
+
+        pResponse.render(JavaScriptHeaderItem.forReference(JavaScriptUtil.JQUERY_1_9_1_REFERENCE));
+        pResponse.render(JavaScriptHeaderItem.forReference(REF_BOOTSTRAP_JS));
+
+        pResponse.render(ComponentCssHeaderItem.forType(WebPageBase.class));
+    }
+
+    /**
+     * 右寄せメニューとなるパネルを生成して下さい.
+     * 
+     * @param pId -
+     * @return -
+     */
+    protected abstract Panel createRightAlignMenu(final String pId);
+
+    /**
+     * @return 右寄せメニューとなるパネル.
+     */
+    protected Panel getRightAlignMenu() {
+        if (this.rightAlignMenu == null) {
+            this.rightAlignMenu = createRightAlignMenu("rightAlignMenu"); //$NON-NLS-1$
+        }
+        return this.rightAlignMenu;
     }
 
     /**
@@ -93,19 +130,18 @@ public abstract class WebPageBase extends WebPage {
      */
     protected abstract IModel<String> getTitleLabelModel();
 
-    /**
-     * @param pResponse 全ての画面に共通して必要なheadタグ内容を出力します.
-     */
-    public static void renderCommonHead(final IHeaderResponse pResponse) {
-        ArgUtil.checkNull(pResponse, "pResponse"); //$NON-NLS-1$
+    private Label getApplicationName() {
+        if (this.applicationName == null) {
+            this.applicationName = new Label("applicationName", Environment.getApplicationName()); //$NON-NLS-1$
+        }
+        return this.applicationName;
+    }
 
-        pResponse.render(IconHeaderItem.forReference(WicketApplication.get().getSharedResourceReference(Resource.FAVICON)));
-
-        pResponse.render(BodyCssHeaderItem.get());
-        pResponse.render(CssHeaderItem.forReference(REF_BOOTSTRAP_CSS));
-        pResponse.render(CssHeaderItem.forReference(REF_APP_CSS));
-
-        pResponse.render(JavaScriptHeaderItem.forReference(JavaScriptUtil.JQUERY_1_9_1_REFERENCE));
-        pResponse.render(JavaScriptHeaderItem.forReference(REF_BOOTSTRAP_JS));
+    private Link<?> getGoTop() {
+        if (this.goTop == null) {
+            this.goTop = new BookmarkablePageLink<>("goTop", Application.get().getHomePage()); //$NON-NLS-1$
+            this.goTop.add(getApplicationName());
+        }
+        return this.goTop;
     }
 }

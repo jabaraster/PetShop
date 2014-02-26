@@ -1,15 +1,39 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <title wicket:id="titleLabel"></title>
-  </head>
-  <body>
+<head>
+  <meta charset="UTF-8" /> <!-- eclipseで編集するときに文字化けするのを防止する -->
+  <title wicket:id="titleLabel"></title>
+</head>
+<body>
+
+  <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <ul class="nav navbar-nav">
+          <li class="active">
+            <a wicket:id="goTop" class="navbar-brand"><span wicket:id="applicationName"></span></a>
+          </li>
+        </ul>
+      </div>
+      <div class="navbar-collapse navbar-right">
+        <!-- 右寄せメニューを置くならここに. -->
+        <div wicket:id="rightAlignMenu"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+
     <wicket:child>
-      この部分に子クラスのコンテンツが入ります.
     </wicket:child>
-  </body>
+
+    <hr>
+  </div> <!-- /container -->
+
+</body>
 </html>
