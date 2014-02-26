@@ -5,6 +5,11 @@ import jabara.wicket.IconHeaderItem;
 import jabara.wicket.JavaScriptUtil;
 import jabara.wicket.Models;
 
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.wicket.Application;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -13,8 +18,11 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
@@ -22,6 +30,7 @@ import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import com.jabaraster.petshop.Environment;
 import com.jabaraster.petshop.web.ui.AppSession;
 import com.jabaraster.petshop.web.ui.WicketApplication;
+import com.jabaraster.petshop.web.ui.WicketApplication.MenuInfo;
 import com.jabaraster.petshop.web.ui.WicketApplication.Resource;
 import com.jabaraster.petshop.web.ui.component.BodyCssHeaderItem;
 
@@ -39,7 +48,9 @@ public abstract class WebPageBase extends WebPage {
     private Label                                    titleLabel;
     private Label                                    applicationName;
     private Link<?>                                  goTop;
-    private Panel                                    rightAlignMenu;
+
+    private ListView<MenuInfo>                       leftAlignMenus;
+    private Panel                                    rightAlignPanel;
 
     /**
      * 
@@ -55,7 +66,20 @@ public abstract class WebPageBase extends WebPage {
         super(pParameters);
         this.add(getTitleLabel());
         this.add(getGoTop());
-        this.add(getRightAlignMenu());
+        this.add(getLeftAlignMenus());
+        this.add(getRightAlignPanel());
+    }
+
+    /**
+     * {@link HttpSession}を取得するメソッドをどこに持たせるかは、非常に悩む. <br>
+     * staticユーティリティメソッドにすることも出来るのだが、それだとServiceクラスの中から使えてしまう. <br>
+     * ここでは、あくまでHTTPを意識するのはView層(=Wicket)まで、ということを主張するために、Wicketのクラスに持たせることにした. <br>
+     * 
+     * @return -
+     */
+    @SuppressWarnings("static-method")
+    public HttpSession getHttpSession() {
+        return ((HttpServletRequest) RequestCycle.get().getRequest().getContainerRequest()).getSession();
     }
 
     /**
@@ -99,16 +123,21 @@ public abstract class WebPageBase extends WebPage {
      * @param pId -
      * @return -
      */
-    protected abstract Panel createRightAlignMenu(final String pId);
+    protected abstract Panel createRightAlignComponent(final String pId);
+
+    /**
+     * @return -
+     */
+    protected abstract IModel<? extends List<? extends MenuInfo>> getLeftAlighMenusModel();
 
     /**
      * @return 右寄せメニューとなるパネル.
      */
-    protected Panel getRightAlignMenu() {
-        if (this.rightAlignMenu == null) {
-            this.rightAlignMenu = createRightAlignMenu("rightAlignMenu"); //$NON-NLS-1$
+    protected Panel getRightAlignPanel() {
+        if (this.rightAlignPanel == null) {
+            this.rightAlignPanel = createRightAlignComponent("rightAlignComponent"); //$NON-NLS-1$
         }
-        return this.rightAlignMenu;
+        return this.rightAlignPanel;
     }
 
     /**
@@ -143,5 +172,21 @@ public abstract class WebPageBase extends WebPage {
             this.goTop.add(getApplicationName());
         }
         return this.goTop;
+    }
+
+    @SuppressWarnings("serial")
+    private ListView<MenuInfo> getLeftAlignMenus() {
+        if (this.leftAlignMenus == null) {
+            this.leftAlignMenus = new ListView<MenuInfo>("leftAlignMenus", getLeftAlighMenusModel()) { //$NON-NLS-1$
+                @Override
+                protected void populateItem(final ListItem<MenuInfo> pItem) {
+                    final MenuInfo menu = pItem.getModelObject();
+                    final Link<?> goPage = new BookmarkablePageLink<>("goPage", menu.getPageType()); //$NON-NLS-1$
+                    goPage.add(new Label("label", menu.getTitleModel())); //$NON-NLS-1$
+                    pItem.add(goPage);
+                }
+            };
+        }
+        return this.leftAlignMenus;
     }
 }

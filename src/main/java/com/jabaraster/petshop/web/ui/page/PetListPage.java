@@ -9,26 +9,18 @@ import jabara.wicket.IAjaxCallback;
 import jabara.wicket.Models;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
-import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.lang.Args;
 
 import com.jabaraster.petshop.entity.EPet;
@@ -37,7 +29,6 @@ import com.jabaraster.petshop.entity.EPet_;
 import com.jabaraster.petshop.service.ICartService;
 import com.jabaraster.petshop.service.IPetService;
 import com.jabaraster.petshop.web.LoginUserHolder;
-import com.jabaraster.petshop.web.ui.component.AttributeColumn;
 import com.jabaraster.petshop.web.ui.component.PetPanel;
 
 /**
@@ -45,25 +36,23 @@ import com.jabaraster.petshop.web.ui.component.PetPanel;
  */
 @SuppressWarnings("synthetic-access")
 public class PetListPage extends RestrictedPageBase {
-    private static final long                          serialVersionUID = -6810213540879254660L;
+    private static final long   serialVersionUID = -6810213540879254660L;
 
     @Inject
-    IPetService                                        petService;
+    IPetService                 petService;
     @Inject
-    ICartService                                       cartService;
+    ICartService                cartService;
 
-    private final Handler                              handler          = new Handler();
+    private final Handler       handler          = new Handler();
 
-    private DataView<EPet>                             pets2;
-    private AjaxPagingNavigator                        petsNavigator;
-    private AjaxFallbackDefaultDataTable<EPet, String> pets;
+    private DataView<EPet>      pets;
+    private AjaxPagingNavigator petsNavigator;
 
     /**
      * 
      */
     public PetListPage() {
         this.add(getPets());
-        this.add(getPets2());
         this.add(getPetsNavigator());
     }
 
@@ -94,20 +83,10 @@ public class PetListPage extends RestrictedPageBase {
         }
     }
 
-    private AjaxFallbackDefaultDataTable<EPet, String> getPets() {
-        if (this.pets == null) {
-            final List<IColumn<EPet, String>> columns = new ArrayList<>();
-            columns.add(AttributeColumn.<EPet> sortable(EPet.getMeta(), EPet_.name));
-            columns.add(new PropertyColumn<EPet, String>(Models.readOnly("種類"), "category.name", "category.name")); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-            this.pets = new AjaxFallbackDefaultDataTable<>("pets", columns, new Provider(), 20); //$NON-NLS-1$
-        }
-        return this.pets;
-    }
-
     @SuppressWarnings("serial")
-    private DataView<EPet> getPets2() {
-        if (this.pets2 == null) {
-            this.pets2 = new DataView<EPet>("pets2", new Provider()) { //$NON-NLS-1$
+    private DataView<EPet> getPets() {
+        if (this.pets == null) {
+            this.pets = new DataView<EPet>("pets", new Provider()) { //$NON-NLS-1$
                 @Override
                 protected void populateItem(final Item<EPet> pItem) {
                     final EPet pet = pItem.getModelObject();
@@ -122,7 +101,7 @@ public class PetListPage extends RestrictedPageBase {
                 }
             };
         }
-        return this.pets2;
+        return this.pets;
     }
 
     private AjaxPagingNavigator getPetsNavigator() {
@@ -135,9 +114,8 @@ public class PetListPage extends RestrictedPageBase {
     private class Handler implements Serializable {
         private static final long serialVersionUID = 8116045922567165578L;
 
-        void onThrowToCart(final EPet pPet, final AjaxRequestTarget pTarget) {
-            final HttpSession session = ((HttpServletRequest) RequestCycle.get().getRequest().getContainerRequest()).getSession();
-            PetListPage.this.cartService.addOrder(LoginUserHolder.get(session), pPet);
+        void onThrowToCart(final EPet pPet, @SuppressWarnings("unused") final AjaxRequestTarget pTarget) {
+            PetListPage.this.cartService.addOrder(LoginUserHolder.get(getHttpSession()), pPet);
         }
     }
 

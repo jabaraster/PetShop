@@ -57,7 +57,7 @@ import com.jabaraster.petshop.web.ui.component.RangeField;
 /**
  * @author jabaraster
  */
-public class PetEditPage extends RestrictedPageBase {
+public class PetEditPage extends AdministrationPageBase {
     private static final long         serialVersionUID = 4199480329927173656L;
 
     @Inject

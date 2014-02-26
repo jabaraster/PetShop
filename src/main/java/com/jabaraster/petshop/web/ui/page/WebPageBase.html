@@ -20,9 +20,16 @@
           </li>
         </ul>
       </div>
-      <div class="navbar-collapse navbar-right">
-        <!-- 右寄せメニューを置くならここに. -->
-        <div wicket:id="rightAlignMenu"></div>
+      <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li wicket:id="leftAlignMenus">
+            <a wicket:id="goPage" href="#"><span wicket:id="label"></span></a>
+          </li>
+        </ul>
+        <div class="navbar-collapse navbar-right">
+          <!-- 右寄せメニューを置くならここに. -->
+          <div wicket:id="rightAlignComponent"></div>
+        </div>
       </div>
     </div>
   </div>

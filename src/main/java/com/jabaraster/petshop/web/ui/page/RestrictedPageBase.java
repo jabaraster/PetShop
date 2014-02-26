@@ -1,12 +1,17 @@
 package com.jabaraster.petshop.web.ui.page;
 
-import jabara.wicket.ComponentCssHeaderItem;
+import jabara.wicket.Models;
 
-import org.apache.wicket.markup.head.IHeaderResponse;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 
-import com.jabaraster.petshop.web.ui.component.MenuPanel;
+import com.jabaraster.petshop.web.LoginUserHolder;
+import com.jabaraster.petshop.web.ui.WicketApplication.MenuInfo;
 
 /**
  *
@@ -29,16 +34,38 @@ public abstract class RestrictedPageBase extends WebPageBase {
     }
 
     /**
-     * @see com.jabaraster.petshop.web.ui.page.WebPageBase#renderHead(org.apache.wicket.markup.head.IHeaderResponse)
+     * @see com.jabaraster.petshop.web.ui.page.WebPageBase#createRightAlignComponent(java.lang.String)
      */
     @Override
-    public void renderHead(final IHeaderResponse pResponse) {
-        super.renderHead(pResponse);
-        pResponse.render(ComponentCssHeaderItem.forType(RestrictedPageBase.class));
+    protected Panel createRightAlignComponent(final String pId) {
+        return new GoLogoutLink(pId);
     }
 
+    /**
+     * @see com.jabaraster.petshop.web.ui.page.WebPageBase#getLeftAlighMenusModel()
+     */
     @Override
-    protected Panel createRightAlignMenu(final String pId) {
-        return new MenuPanel(pId, getPetShopApplication().getMenus());
+    protected IModel<? extends List<? extends MenuInfo>> getLeftAlighMenusModel() {
+        final List<MenuInfo> menus = getPetShopApplication().getMenus();
+        if (LoginUserHolder.get(getHttpSession()).isAdministrator()) {
+            return Models.ofList(menus);
+        }
+
+        final List<MenuInfo> ret = new ArrayList<>();
+        for (final MenuInfo menu : menus) {
+            if (!AdministrationPageBase.class.isAssignableFrom(menu.getPageType())) {
+                ret.add(menu);
+            }
+        }
+        return Models.ofList(ret);
+    }
+
+    private static class GoLogoutLink extends Panel {
+        private static final long serialVersionUID = -2325124434551475970L;
+
+        public GoLogoutLink(final String pId) {
+            super(pId);
+            this.add(new BookmarkablePageLink<>("goLogout", LogoutPage.class)); //$NON-NLS-1$
+        }
     }
 }

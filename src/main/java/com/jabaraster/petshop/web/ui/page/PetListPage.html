@@ -7,18 +7,26 @@
 
 <wicket:extend>
 
-<div class="PetListPage">
+<div class="container">
+  <div class="row">
 
-  <table wicket:id="pets" class="table table-striped"></table>
+    <div class="col-lg-10">
+      <div class="PetListPage">
+        <div wicket:id="petsNavigator"></div>
+        <ul>
+          <li wicket:id="pets">
+            <fieldset wicket:id="pet"></fieldset>
+          </li>
+        </ul>
+      </div>
+    </div>
 
-  <div wicket:id="petsNavigator"></div>
-  <ul>
-    <li wicket:id="pets2">
-      <fieldset wicket:id="pet"></fieldset>
-    </li>
-  </ul>
+    <div class="col-lg-2">
+      ここにカートを置きたい
+    </div>
 
-</div>
+  </div> <!-- class="row" -->
+</div> <!-- class="container" -->
 
 </wicket:extend>
 

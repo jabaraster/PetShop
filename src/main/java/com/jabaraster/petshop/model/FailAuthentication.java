@@ -13,7 +13,7 @@ public class FailAuthentication extends Exception {
      * 
      */
     @SuppressWarnings("synthetic-access")
-    public static final Global INSTANCE         = new Global();
+    public static final Global GLOBAL         = new Global();
 
     /**
      * 

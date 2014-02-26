@@ -33,6 +33,10 @@ import com.jabaraster.petshop.web.ui.page.LogoutPage;
 import com.jabaraster.petshop.web.ui.page.PetEditPage;
 import com.jabaraster.petshop.web.ui.page.PetListPage;
 import com.jabaraster.petshop.web.ui.page.RestrictedPageBase;
+import com.jabaraster.petshop.web.ui.page.UserDeletePage;
+import com.jabaraster.petshop.web.ui.page.UserInsertPage;
+import com.jabaraster.petshop.web.ui.page.UserListPage;
+import com.jabaraster.petshop.web.ui.page.UserUpdatePage;
 import com.jabaraster.petshop.web.ui.page.WebPageBase;
 
 /**
@@ -44,6 +48,7 @@ public class WicketApplication extends WebApplication {
 
     private static List<MenuInfo>     _menus = Collections.unmodifiableList(Arrays.asList(new MenuInfo[] { //
                                                      new MenuInfo(PetEditPage.class, Models.readOnly("ペット登録")) // //$NON-NLS-1$
+            , new MenuInfo(UserListPage.class, Models.readOnly("ユーザ一覧")) // //$NON-NLS-1$
                                                      }));
 
     private final IProvider<Injector> injectorProvider;
@@ -167,13 +172,20 @@ public class WicketApplication extends WebApplication {
         });
     }
 
+    @SuppressWarnings("nls")
     private void mountPages() {
-        this.mountPage("login", LoginPage.class); //$NON-NLS-1$
-        this.mountPage("logout", LogoutPage.class); //$NON-NLS-1$
+        this.mountPage("login", LoginPage.class);
+        this.mountPage("logout", LogoutPage.class);
 
-        this.mountPage("pet/", PetListPage.class); //$NON-NLS-1$
-        this.mountPage("pet/index", PetListPage.class); //$NON-NLS-1$
-        this.mountPage("pet/edit", PetEditPage.class); //$NON-NLS-1$
+        this.mountPage("pet/", PetListPage.class);
+        this.mountPage("pet/index", PetListPage.class);
+        this.mountPage("pet/new", PetEditPage.class);
+
+        this.mountPage("user/", UserListPage.class);
+        this.mountPage("user/index", UserListPage.class);
+        this.mountPage("user/new", UserInsertPage.class);
+        this.mountPage("user/edit", UserUpdatePage.class);
+        this.mountPage("user/delete", UserDeletePage.class);
     }
 
     private void mountResource(final Resource pResource, final String pFilePath, final Duration pCacheDuration) {

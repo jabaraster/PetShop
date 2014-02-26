@@ -14,9 +14,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import com.jabaraster.petshop.entity.EUser_;
 import com.jabaraster.petshop.entity.ELoginPassword;
 import com.jabaraster.petshop.entity.ELoginPassword_;
+import com.jabaraster.petshop.entity.EUser_;
 import com.jabaraster.petshop.model.FailAuthentication;
 import com.jabaraster.petshop.model.LoginUser;
 import com.jabaraster.petshop.service.IAuthenticationService;
@@ -25,6 +25,7 @@ import com.jabaraster.petshop.service.IAuthenticationService;
  * @author jabaraster
  */
 public class AuthenticationServiceImpl extends JpaDaoBase implements IAuthenticationService {
+    private static final long serialVersionUID = 8051934840261149614L;
 
     /**
      * @param pEntityManagerFactory -
@@ -56,13 +57,13 @@ public class AuthenticationServiceImpl extends JpaDaoBase implements IAuthentica
         try {
             final ELoginPassword member = getSingleResult(em.createQuery(query));
             if (!member.equal(pPassword)) {
-                throw FailAuthentication.INSTANCE;
+                throw FailAuthentication.GLOBAL;
             }
 
             return new LoginUser(member.getUser());
 
         } catch (final NotFound e) {
-            throw FailAuthentication.INSTANCE;
+            throw FailAuthentication.GLOBAL;
         }
     }
 }

@@ -7,11 +7,16 @@
 
 <wicket:panel>
 
-  <fieldset>
-    <legend wicket:id="name"></legend>
-    <img wicket:id="image" />
-    <label wicket:id="unitPrice"></label>
-  </fieldset>
+  <form wicket:id="form">
+    <fieldset>
+      <legend wicket:id="name"></legend>
+      <img wicket:id="image" class="petImage" />
+      <label wicket:id="unitPrice"></label>
+      <button wicket:id="cartThrower" type="submit" class="btn btn-sm btn-success">
+        <span class="glyphicon glyphicon-shopping-cart"></span>
+      </button>
+    </fieldset>
+  </form>
 
 </wicket:panel>
 

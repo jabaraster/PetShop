@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import lombok.AllArgsConstructor;
@@ -34,6 +35,7 @@ public class ECart extends EntityBase<ECart> {
     @Getter
     @Setter
     @JoinColumn(nullable = false, unique = true)
+    @ManyToOne
     protected EUser           user;
 
     /**

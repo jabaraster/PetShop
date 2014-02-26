@@ -17,9 +17,12 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+import lombok.NoArgsConstructor;
+
 /**
  * @author jabaraster
  */
+@NoArgsConstructor
 @Entity
 public class ELoginPassword extends EntityBase<ELoginPassword> {
     private static final long          serialVersionUID = 7885103086152737376L;
@@ -32,12 +35,22 @@ public class ELoginPassword extends EntityBase<ELoginPassword> {
      */
     @Column(nullable = false)
     protected byte[]                   password         = {};
+
     /**
      * 
      */
     @OneToOne
     @JoinColumn(nullable = false)
     protected EUser                    user;
+
+    /**
+     * @param pUser -
+     * @param pPassword -
+     */
+    public ELoginPassword(final EUser pUser, final String pPassword) {
+        setUser(pUser);
+        setPassword(pPassword);
+    }
 
     /**
      * @param pPassword -
