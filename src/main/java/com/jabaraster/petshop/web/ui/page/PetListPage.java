@@ -14,6 +14,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
@@ -26,6 +28,7 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.lang.Args;
 
 import com.jabaraster.petshop.entity.EPet;
@@ -33,12 +36,14 @@ import com.jabaraster.petshop.entity.EPetImageData;
 import com.jabaraster.petshop.entity.EPet_;
 import com.jabaraster.petshop.service.ICartService;
 import com.jabaraster.petshop.service.IPetService;
+import com.jabaraster.petshop.web.LoginUserHolder;
 import com.jabaraster.petshop.web.ui.component.AttributeColumn;
 import com.jabaraster.petshop.web.ui.component.PetPanel;
 
 /**
  * @author jabaraster
  */
+@SuppressWarnings("synthetic-access")
 public class PetListPage extends RestrictedPageBase {
     private static final long                          serialVersionUID = -6810213540879254660L;
 
@@ -131,7 +136,8 @@ public class PetListPage extends RestrictedPageBase {
         private static final long serialVersionUID = 8116045922567165578L;
 
         void onThrowToCart(final EPet pPet, final AjaxRequestTarget pTarget) {
-            PetListPage.this.cartService.addOrder(FIXME, pPet);
+            final HttpSession session = ((HttpServletRequest) RequestCycle.get().getRequest().getContainerRequest()).getSession();
+            PetListPage.this.cartService.addOrder(LoginUserHolder.get(session), pPet);
         }
     }
 
