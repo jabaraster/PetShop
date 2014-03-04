@@ -5,15 +5,21 @@ package com.jabaraster.petshop.service.impl;
 
 import jabara.jpa.ThreadLocalEntityManagerFactoryHandler;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import com.jabaraster.petshop.Environment;
-
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+
+import com.jabaraster.petshop.Environment;
 
 /**
  * @param <S> テスト対象のサービスの型.
@@ -35,7 +41,10 @@ public abstract class JpaDaoRule<S> implements TestRule {
             @SuppressWarnings("synthetic-access")
             @Override
             public void evaluate() throws Throwable {
-                final EntityManagerFactory original = Persistence.createEntityManagerFactory(Environment.getApplicationName());
+                final Map<String, String> prop = new HashMap<>();
+                //                prop.put("hibernate.dialect", H2Dialect.class.getName()); //$NON-NLS-1$
+                final EntityManagerFactory original = Persistence.createEntityManagerFactory( //
+                        Environment.getApplicationName() + "_WithDataSource", prop); //$NON-NLS-1$
                 JpaDaoRule.this.entityManagerFactory = ThreadLocalEntityManagerFactoryHandler.wrap(original);
                 JpaDaoRule.this.entityManager = JpaDaoRule.this.entityManagerFactory.createEntityManager();
                 JpaDaoRule.this.sut = createService(JpaDaoRule.this.entityManagerFactory);
@@ -64,6 +73,22 @@ public abstract class JpaDaoRule<S> implements TestRule {
     }
 
     /**
+     * @param pInterface -
+     * @param <I> -
+     * @return インターフェイス I を実装したダミーオブジェクトを返します.
+     */
+    @SuppressWarnings("unchecked")
+    public static <I> I createDummy(final Class<I> pInterface) {
+        return (I) Proxy.newProxyInstance(pInterface.getClassLoader(), new Class<?>[] { pInterface }, new InvocationHandler() {
+            @SuppressWarnings("unused")
+            @Override
+            public Object invoke(final Object pProxy, final Method pMethod, final Object[] pArgs) throws Throwable {
+                return null;
+            }
+        });
+    }
+
+    /**
      * @return sutを返す.
      */
     public S getSut() {
@@ -74,6 +99,6 @@ public abstract class JpaDaoRule<S> implements TestRule {
      * @param pEntityManagerFactory -
      * @return -
      */
-    protected abstract S createService(EntityManagerFactory pEntityManagerFactory);
+    protected abstract S createService(final EntityManagerFactory pEntityManagerFactory);
 
 }

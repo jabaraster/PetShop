@@ -18,10 +18,10 @@ import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.lang.Args;
 
 import com.jabaraster.petshop.entity.EPet;
 import com.jabaraster.petshop.entity.EPetImageData;
@@ -29,6 +29,7 @@ import com.jabaraster.petshop.entity.EPet_;
 import com.jabaraster.petshop.service.ICartService;
 import com.jabaraster.petshop.service.IPetService;
 import com.jabaraster.petshop.web.LoginUserHolder;
+import com.jabaraster.petshop.web.ui.component.PetCategoriesPane;
 import com.jabaraster.petshop.web.ui.component.PetPanel;
 
 /**
@@ -45,6 +46,8 @@ public class PetListPage extends RestrictedPageBase {
 
     private final Handler       handler          = new Handler();
 
+    private PetCategoriesPane   categories;
+    private WebMarkupContainer  petsContainer;
     private DataView<EPet>      pets;
     private AjaxPagingNavigator petsNavigator;
 
@@ -52,7 +55,8 @@ public class PetListPage extends RestrictedPageBase {
      * 
      */
     public PetListPage() {
-        this.add(getPets());
+        this.add(getCategories());
+        this.add(getPetsContainer());
         this.add(getPetsNavigator());
     }
 
@@ -84,6 +88,20 @@ public class PetListPage extends RestrictedPageBase {
     }
 
     @SuppressWarnings("serial")
+    private PetCategoriesPane getCategories() {
+        if (this.categories == null) {
+            this.categories = new PetCategoriesPane("categories"); //$NON-NLS-1$
+            this.categories.setOnSelect(new IAjaxCallback() {
+                @Override
+                public void call(final AjaxRequestTarget pTarget) {
+                    PetListPage.this.handler.onCategorySelected(pTarget);
+                }
+            });
+        }
+        return this.categories;
+    }
+
+    @SuppressWarnings("serial")
     private DataView<EPet> getPets() {
         if (this.pets == null) {
             this.pets = new DataView<EPet>("pets", new Provider()) { //$NON-NLS-1$
@@ -104,6 +122,14 @@ public class PetListPage extends RestrictedPageBase {
         return this.pets;
     }
 
+    private WebMarkupContainer getPetsContainer() {
+        if (this.petsContainer == null) {
+            this.petsContainer = new WebMarkupContainer("petsContainer"); //$NON-NLS-1$
+            this.petsContainer.add(getPets());
+        }
+        return this.petsContainer;
+    }
+
     private AjaxPagingNavigator getPetsNavigator() {
         if (this.petsNavigator == null) {
             this.petsNavigator = new AjaxPagingNavigator("petsNavigator", getPets()); //$NON-NLS-1$
@@ -113,6 +139,13 @@ public class PetListPage extends RestrictedPageBase {
 
     private class Handler implements Serializable {
         private static final long serialVersionUID = 8116045922567165578L;
+
+        void onCategorySelected(final AjaxRequestTarget pTarget) {
+            if (getCategories().getSelectedCategories().isEmpty()) {
+                return;
+            }
+            pTarget.add(getPetsContainer());
+        }
 
         void onThrowToCart(final EPet pPet, @SuppressWarnings("unused") final AjaxRequestTarget pTarget) {
             PetListPage.this.cartService.addOrder(LoginUserHolder.get(getHttpSession()), pPet);
@@ -126,12 +159,15 @@ public class PetListPage extends RestrictedPageBase {
             this.setSort(EPet_.name.getName(), SortOrder.ASCENDING);
         }
 
-        @SuppressWarnings("boxing")
         @Override
         public Iterator<? extends EPet> iterator(final long pFirst, final long pCount) {
-            Args.<Long> withinRange(0L, Long.valueOf(Integer.MAX_VALUE), pFirst, "pFirst"); //$NON-NLS-1$
-            Args.<Long> withinRange(0L, Long.valueOf(Integer.MAX_VALUE), pCount, "pCount"); //$NON-NLS-1$
-            return PetListPage.this.petService.fetch((int) pFirst, (int) pCount, getSort().getProperty(), getSort().isAscending()).iterator();
+            return PetListPage.this.petService.fetch( //
+                    pFirst //
+                    , pCount //
+                    , getCategories().getSelectedCategories() //
+                    , getSort().getProperty() //
+                    , getSort().isAscending()) //
+                    .iterator();
         }
 
         @Override

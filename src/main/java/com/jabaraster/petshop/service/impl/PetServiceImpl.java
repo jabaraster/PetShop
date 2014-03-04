@@ -67,10 +67,23 @@ public class PetServiceImpl extends JpaDaoBase implements IPetService {
     }
 
     /**
-     * @see com.jabaraster.petshop.service.IPetService#fetch(int, int, java.lang.String, boolean)
+     * @see com.jabaraster.petshop.service.IPetService#fetch(long, long, java.util.List, java.lang.String, boolean)
      */
     @Override
-    public List<EPet> fetch(final int pFirst, final int pCount, final String pSortProperty, final boolean pAscending) {
+    public List<EPet> fetch( //
+            final long pFirst //
+            , final long pCount //
+            , final List<EPetCategory> pCategories //
+            , final String pSortProperty //
+            , final boolean pAscending) {
+
+        final int first = convertToInt(pFirst, "pFirst"); //$NON-NLS-1$
+        final int count = convertToInt(pCount, "pCount"); //$NON-NLS-1$
+
+        if (pCategories == null || pCategories.isEmpty()) {
+            throw new IllegalStateException();
+        }
+
         final EntityManager em = getEntityManager();
         final CriteriaBuilder builder = em.getCriteriaBuilder();
         final CriteriaQuery<EPet> query = builder.createQuery(EPet.class);
@@ -81,7 +94,11 @@ public class PetServiceImpl extends JpaDaoBase implements IPetService {
         final Sort sort = pAscending ? Sort.asc(pSortProperty) : Sort.desc(pSortProperty);
         query.orderBy(convertOrder(sort, builder, root));
 
-        return em.createQuery(query).setFirstResult(pFirst).setMaxResults(pCount).getResultList();
+        query.where( //
+        root.get(EPet_.category).in(pCategories) //
+        );
+
+        return em.createQuery(query).setFirstResult(first).setMaxResults(count).getResultList();
     }
 
     /**

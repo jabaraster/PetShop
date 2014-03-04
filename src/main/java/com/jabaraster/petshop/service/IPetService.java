@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.google.inject.ImplementedBy;
 import com.jabaraster.petshop.entity.EPet;
+import com.jabaraster.petshop.entity.EPetCategory;
 import com.jabaraster.petshop.entity.EPetImageData;
 import com.jabaraster.petshop.service.impl.PetServiceImpl;
 
@@ -42,11 +43,12 @@ public interface IPetService {
     /**
      * @param pFirst -
      * @param pCount -
+     * @param pCategories null及び空リストの指定は不可.
      * @param pSortProperty -
      * @param pAscending -
      * @return -
      */
-    List<EPet> fetch(final int pFirst, final int pCount, final String pSortProperty, final boolean pAscending);
+    List<EPet> fetch(final long pFirst, final long pCount, final List<EPetCategory> pCategories, final String pSortProperty, final boolean pAscending);
 
     /**
      * @return -

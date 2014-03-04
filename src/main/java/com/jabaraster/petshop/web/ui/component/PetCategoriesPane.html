@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+</head>
+<body>
+
+<wicket:panel>
+
+  <h4>カテゴリ</h4>
+  <form wicket:id="form">
+    <ul class="categories">
+      <li wicket:id="categories">
+        <label>
+          <input type="checkbox" wicket:id="category" /> <span wicket:id="label"></span>
+        </label>
+      </li>
+    </ul>
+    <button wicket:id="submitter" class="btn btn-primary">
+      <i class="glyphicon glyphicon-white glyphicon-ok"></i>
+      検索
+    </button>
+  </form>
+
+</wicket:panel>
+
+</body>
+</html>
