@@ -66,7 +66,22 @@ public class CartServiceImpl extends JpaDaoBase implements ICartService {
             order.incrementQuantity();
         } catch (final NotFound e) {
             final EOrder order = new EOrder(pPet);
+            getEntityManager().persist(order);
             cart.addOrder(order);
+        }
+    }
+
+    /**
+     * @see com.jabaraster.petshop.service.ICartService#findByUserId(long)
+     */
+    @Override
+    public ECart findByUserId(final long pUserId) {
+        try {
+            final EUser user = this.userService.findById(pUserId);
+            return getUserCart(user);
+        } catch (final NotFound e) {
+            // ログインしているユーザが管理者によって削除された場合はここが実行される可能性がある.
+            throw new IllegalStateException();
         }
     }
 

@@ -29,6 +29,7 @@ import com.jabaraster.petshop.entity.EPet_;
 import com.jabaraster.petshop.service.ICartService;
 import com.jabaraster.petshop.service.IPetService;
 import com.jabaraster.petshop.web.LoginUserHolder;
+import com.jabaraster.petshop.web.ui.component.CartPanel;
 import com.jabaraster.petshop.web.ui.component.PetCategoriesPane;
 import com.jabaraster.petshop.web.ui.component.PetPanel;
 
@@ -47,6 +48,8 @@ public class PetListPage extends RestrictedPageBase {
     private final Handler       handler          = new Handler();
 
     private PetCategoriesPane   categories;
+    private CartPanel           cart;
+
     private WebMarkupContainer  petsContainer;
     private DataView<EPet>      pets;
     private AjaxPagingNavigator petsNavigator;
@@ -56,6 +59,7 @@ public class PetListPage extends RestrictedPageBase {
      */
     public PetListPage() {
         this.add(getCategories());
+        this.add(getCart());
         this.add(getPetsContainer());
         this.add(getPetsNavigator());
     }
@@ -85,6 +89,13 @@ public class PetListPage extends RestrictedPageBase {
         } catch (final NotFound e) {
             return new PetPanel(ID, pPet);
         }
+    }
+
+    private CartPanel getCart() {
+        if (this.cart == null) {
+            this.cart = new CartPanel("cart", LoginUserHolder.get(getHttpSession())); //$NON-NLS-1$
+        }
+        return this.cart;
     }
 
     @SuppressWarnings("serial")
@@ -147,8 +158,9 @@ public class PetListPage extends RestrictedPageBase {
             pTarget.add(getPetsContainer());
         }
 
-        void onThrowToCart(final EPet pPet, @SuppressWarnings("unused") final AjaxRequestTarget pTarget) {
+        void onThrowToCart(final EPet pPet, final AjaxRequestTarget pTarget) {
             PetListPage.this.cartService.addOrder(LoginUserHolder.get(getHttpSession()), pPet);
+            pTarget.add(getCart());
         }
     }
 

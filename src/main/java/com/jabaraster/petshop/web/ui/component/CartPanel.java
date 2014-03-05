@@ -5,77 +5,65 @@ package com.jabaraster.petshop.web.ui.component;
 
 import jabara.general.ArgUtil;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
-import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
-import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
-import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
+import javax.inject.Inject;
 
-import com.jabaraster.petshop.entity.ECart;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.LoadableDetachableModel;
+
 import com.jabaraster.petshop.entity.EOrder;
-import com.jabaraster.petshop.entity.EOrder_;
-import com.jabaraster.petshop.entity.EPet_;
+import com.jabaraster.petshop.model.LoginUser;
+import com.jabaraster.petshop.service.ICartService;
 
 /**
  * @author jabaraster
  */
 public class CartPanel extends Panel {
-    private static final long                            serialVersionUID = 8875179468600843699L;
+    private static final long serialVersionUID = 8875179468600843699L;
 
-    private final ECart                                  cart;
+    @Inject
+    ICartService              cartService;
 
-    private AjaxFallbackDefaultDataTable<EOrder, String> orders;
+    private final LoginUser   loginUser;
+
+    private ListView<EOrder>  orders;
 
     /**
      * @param pId -
-     * @param pCart -
+     * @param pLoginUser -
      */
-    public CartPanel(final String pId, final ECart pCart) {
+    public CartPanel(final String pId, final LoginUser pLoginUser) {
         super(pId);
-        this.cart = ArgUtil.checkNull(pCart, "pCart"); //$NON-NLS-1$
+        this.loginUser = ArgUtil.checkNull(pLoginUser, "pLoginUser"); //$NON-NLS-1$
+
         this.add(getOrders());
     }
 
-    private AjaxFallbackDefaultDataTable<EOrder, String> getOrders() {
+    @SuppressWarnings("serial")
+    private ListView<EOrder> getOrders() {
         if (this.orders == null) {
-            final List<IColumn<EOrder, String>> columns = new ArrayList<>();
-            final ISortableDataProvider<EOrder, String> provider = new Provider();
-            final int rowPerPage = 30;
-            this.orders = new AjaxFallbackDefaultDataTable<>("orders", columns, provider, rowPerPage); //$NON-NLS-1$
+            this.orders = new ListView<EOrder>("orders", new CartModel()) { //$NON-NLS-1$
+                @Override
+                protected void populateItem(final ListItem<EOrder> pItem) {
+                    final EOrder order = pItem.getModelObject();
+                    pItem.add(new Label("petName", order.getPet().getName())); //$NON-NLS-1$
+                    pItem.add(new Label("quantity", Integer.valueOf(order.getQuantity()))); //$NON-NLS-1$
+                }
+            };
         }
         return this.orders;
     }
 
-    private class Provider extends SortableDataProvider<EOrder, String> {
-        private static final long serialVersionUID = 2441285079114803927L;
-
-        Provider() {
-            this.setSort(EOrder_.pet.getName() + "." + EPet_.name.getName(), SortOrder.ASCENDING); //$NON-NLS-1$
-        }
+    private class CartModel extends LoadableDetachableModel<List<EOrder>> {
+        private static final long serialVersionUID = -767694712606611459L;
 
         @Override
-        public Iterator<? extends EOrder> iterator(final long pFirst, final long pCount) {
-            // TODO Auto-generated method stub
-            return null;
+        protected List<EOrder> load() {
+            return CartPanel.this.cartService.findByUserId(CartPanel.this.loginUser.getId()).getOrders();
         }
-
-        @Override
-        public IModel<EOrder> model(final EOrder pObject) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public long size() {
-            // TODO Auto-generated method stub
-            return 0;
-        }
-
     }
 }

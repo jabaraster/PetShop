@@ -7,11 +7,13 @@
 
 <wicket:panel>
 
-  <fieldset>
-    <legend wicket:id="name"></legend>
-    <img wicket:id="image" />
-    <label wicket:id="unitPrice"></label>
-  </fieldset>
+  <h4>カート</h4>
+  <table class="table table-striped">
+    <tr wicket:id="orders">
+      <td wicket:id="petName"></td>
+      <td wicket:id="quantity"></td>
+    </tr>
+  </table>
 
 </wicket:panel>
 
