@@ -11,17 +11,26 @@ import jabara.wicket.NullAjaxCallback;
 import java.io.Serializable;
 import java.text.NumberFormat;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.ByteArrayResource;
 
 import com.jabaraster.petshop.entity.EPet;
 import com.jabaraster.petshop.entity.EPetImageData;
+import com.jabaraster.petshop.model.LoginUser;
+import com.jabaraster.petshop.web.LoginUserHolder;
+import com.jabaraster.petshop.web.ui.page.PetEditPage;
 
 /**
  * @author jabaraster
@@ -39,6 +48,7 @@ public class PetPanel extends Panel {
     private Image               image;
     private Label               unitPrice;
     private AjaxButton          cartThrower;
+    private Link<?>             goEdit;
 
     private IAjaxCallback       onThrowToCart    = NullAjaxCallback.GLOBAL;
 
@@ -92,8 +102,25 @@ public class PetPanel extends Panel {
             this.form.add(getImage());
             this.form.add(getUnitPrice());
             this.form.add(getCartThrower());
+            this.form.add(getGoEdit());
         }
         return this.form;
+    }
+
+    @SuppressWarnings("serial")
+    private Link<?> getGoEdit() {
+        if (this.goEdit == null) {
+            final PageParameters param = PetEditPage.createParmater(this.pet.getId().longValue());
+            this.goEdit = new BookmarkablePageLink<Object>("goEdit", PetEditPage.class, param) { //$NON-NLS-1$
+                @Override
+                public boolean isVisible() {
+                    final HttpServletRequest request = (HttpServletRequest) RequestCycle.get().getRequest().getContainerRequest();
+                    final LoginUser loginUser = LoginUserHolder.get(request.getSession());
+                    return loginUser.isAdministrator();
+                }
+            };
+        }
+        return this.goEdit;
     }
 
     private Image getImage() {

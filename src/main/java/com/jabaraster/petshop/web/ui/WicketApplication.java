@@ -31,7 +31,9 @@ import com.jabaraster.petshop.web.ui.page.AdministrationPageBase;
 import com.jabaraster.petshop.web.ui.page.LoginPage;
 import com.jabaraster.petshop.web.ui.page.LogoutPage;
 import com.jabaraster.petshop.web.ui.page.PetEditPage;
+import com.jabaraster.petshop.web.ui.page.PetEditPageBase;
 import com.jabaraster.petshop.web.ui.page.PetListPage;
+import com.jabaraster.petshop.web.ui.page.PetNewPage;
 import com.jabaraster.petshop.web.ui.page.RestrictedPageBase;
 import com.jabaraster.petshop.web.ui.page.UserDeletePage;
 import com.jabaraster.petshop.web.ui.page.UserInsertPage;
@@ -47,7 +49,7 @@ public class WicketApplication extends WebApplication {
     private static final String       ENC    = "UTF-8";  //$NON-NLS-1$
 
     private static List<MenuInfo>     _menus = Collections.unmodifiableList(Arrays.asList(new MenuInfo[] { //
-                                                     new MenuInfo(PetEditPage.class, Models.readOnly("ペット登録")) // //$NON-NLS-1$
+                                                     new MenuInfo(PetEditPageBase.class, Models.readOnly("ペット登録")) // //$NON-NLS-1$
             , new MenuInfo(UserListPage.class, Models.readOnly("ユーザ一覧")) // //$NON-NLS-1$
                                                      }));
 
@@ -179,7 +181,8 @@ public class WicketApplication extends WebApplication {
 
         this.mountPage("pet/", PetListPage.class);
         this.mountPage("pet/index", PetListPage.class);
-        this.mountPage("pet/new", PetEditPage.class);
+        this.mountPage("pet/new", PetNewPage.class);
+        this.mountPage("pet/edit", PetEditPage.class);
 
         this.mountPage("user/", UserListPage.class);
         this.mountPage("user/index", UserListPage.class);

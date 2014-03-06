@@ -1,5 +1,6 @@
 package com.jabaraster.petshop.web.ui.page;
 
+import jabara.wicket.ComponentJavaScriptHeaderItem;
 import jabara.wicket.IAjaxCallback;
 import jabara.wicket.Models;
 
@@ -8,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.pages.RedirectPage;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -27,6 +29,15 @@ public class LoginPage extends WebPageBase {
     private static final long serialVersionUID = -549716745755288187L;
 
     private final Handler     handler          = new Handler();
+
+    /**
+     * @see com.jabaraster.petshop.web.ui.page.WebPageBase#renderHead(org.apache.wicket.markup.head.IHeaderResponse)
+     */
+    @Override
+    public void renderHead(final IHeaderResponse pResponse) {
+        super.renderHead(pResponse);
+        pResponse.render(ComponentJavaScriptHeaderItem.forType(LoginPage.class));
+    }
 
     /**
      * @see com.jabaraster.petshop.web.ui.page.WebPageBase#createRightAlignComponent(java.lang.String)
