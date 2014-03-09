@@ -12,6 +12,18 @@
     <tr wicket:id="orders">
       <td wicket:id="petName"></td>
       <td wicket:id="quantity"></td>
+      <td>
+        <div class="btn-group">
+          <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown">
+            アクション <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="#">詳細を確認</a></li>
+            <li class="divider"></li>
+            <li class="danger"><a href="#">カートから削除</a></li>
+          </ul>
+        </div>
+      </td>
     </tr>
   </table>
 
