@@ -10,13 +10,13 @@ import org.apache.wicket.model.IModel;
 /**
  * @author jabaraster
  */
-public class UserInsertPage extends UserEditPage {
+public class UserNewPage extends UserEditPageBase {
     private static final long serialVersionUID = 8316834293476226340L;
 
     /**
      * 
      */
-    public UserInsertPage() {
+    public UserNewPage() {
         super();
     }
 

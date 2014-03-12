@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.image.Image;
@@ -48,6 +49,8 @@ public class PetPanel extends Panel {
     private Image               image;
     private Label               unitPrice;
     private AjaxButton          cartThrower;
+
+    private WebMarkupContainer  administrationMenuContainer;
     private Link<?>             goEdit;
 
     private IAjaxCallback       onThrowToCart    = NullAjaxCallback.GLOBAL;
@@ -83,6 +86,22 @@ public class PetPanel extends Panel {
     }
 
     @SuppressWarnings("serial")
+    private WebMarkupContainer getAdministrationMenuContainer() {
+        if (this.administrationMenuContainer == null) {
+            this.administrationMenuContainer = new WebMarkupContainer("administrationMenuContainer") { //$NON-NLS-1$
+                @Override
+                public boolean isVisible() {
+                    final HttpServletRequest request = (HttpServletRequest) RequestCycle.get().getRequest().getContainerRequest();
+                    final LoginUser loginUser = LoginUserHolder.get(request.getSession());
+                    return loginUser.isAdministrator();
+                }
+            };
+            this.administrationMenuContainer.add(getGoEdit());
+        }
+        return this.administrationMenuContainer;
+    }
+
+    @SuppressWarnings("serial")
     private AjaxButton getCartThrower() {
         if (this.cartThrower == null) {
             this.cartThrower = new IndicatingAjaxButton("cartThrower") { //$NON-NLS-1$
@@ -102,23 +121,15 @@ public class PetPanel extends Panel {
             this.form.add(getImage());
             this.form.add(getUnitPrice());
             this.form.add(getCartThrower());
-            this.form.add(getGoEdit());
+            this.form.add(getAdministrationMenuContainer());
         }
         return this.form;
     }
 
-    @SuppressWarnings("serial")
     private Link<?> getGoEdit() {
         if (this.goEdit == null) {
             final PageParameters param = PetEditPage.createParmater(this.pet.getId().longValue());
-            this.goEdit = new BookmarkablePageLink<Object>("goEdit", PetEditPage.class, param) { //$NON-NLS-1$
-                @Override
-                public boolean isVisible() {
-                    final HttpServletRequest request = (HttpServletRequest) RequestCycle.get().getRequest().getContainerRequest();
-                    final LoginUser loginUser = LoginUserHolder.get(request.getSession());
-                    return loginUser.isAdministrator();
-                }
-            };
+            this.goEdit = new BookmarkablePageLink<>("goEdit", PetEditPage.class, param); //$NON-NLS-1$
         }
         return this.goEdit;
     }

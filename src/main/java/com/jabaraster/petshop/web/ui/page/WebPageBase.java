@@ -7,9 +7,6 @@ import jabara.wicket.Models;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.apache.wicket.Application;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -22,7 +19,6 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
@@ -68,18 +64,6 @@ public abstract class WebPageBase extends WebPage {
         this.add(getGoTop());
         this.add(getLeftAlignMenus());
         this.add(getRightAlignPanel());
-    }
-
-    /**
-     * {@link HttpSession}を取得するメソッドをどこに持たせるかは、非常に悩む. <br>
-     * staticユーティリティメソッドにすることも出来るのだが、それだとServiceクラスの中から使えてしまう. <br>
-     * ここでは、あくまでHTTPを意識するのはView層(=Wicket)まで、ということを主張するために、Wicketのクラスに持たせることにした. <br>
-     * 
-     * @return -
-     */
-    @SuppressWarnings("static-method")
-    public HttpSession getHttpSession() {
-        return ((HttpServletRequest) RequestCycle.get().getRequest().getContainerRequest()).getSession();
     }
 
     /**

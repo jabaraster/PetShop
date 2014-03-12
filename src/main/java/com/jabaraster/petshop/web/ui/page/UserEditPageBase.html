@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+  <title></title>
+  <meta charset="UTF-8" />
+</head>
+<body>
+
+<wicket:extend>
+
+  <form wicket:id="form">
+    <div wicket:id="feedback"></div>
+    <ul>
+      <wicket:container wicket:id="editor"></wicket:container>
+      <li class="input">
+        <span class="label">パスワード</span>
+        <input type="password" wicket:id="password"/>
+        <div wicket:id="passwordFeedback" class="feedback"></div>
+      </li>
+      <li class="input">
+        <span class="label">パスワード（確認）</span>
+        <input type="password" wicket:id="passwordConfirmation"/>
+        <div wicket:id="passwordConfirmationFeedback" class="feedback"></div>
+      </li>
+    </ul>
+    <div class="button">
+      <button wicket:id="submitter" class="btn btn-lg btn-primary">
+        <i class="glyphicon glyphicon-white glyphicon-ok"></i>
+        送信
+      </button>
+    </div>
+  </form>
+
+</wicket:extend>
+
+</body>
+</html>

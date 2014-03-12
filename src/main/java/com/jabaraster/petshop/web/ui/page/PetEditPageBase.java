@@ -91,7 +91,8 @@ public abstract class PetEditPageBase extends AdministrationPageBase {
      *
      */
     public PetEditPageBase() {
-        this(new PageParameters());
+        this.pet = new EPet();
+        initialize();
     }
 
     /**
@@ -111,9 +112,7 @@ public abstract class PetEditPageBase extends AdministrationPageBase {
             throw new RestartResponseException(getApplication().getHomePage());
         }
 
-        this.add(getForm());
-        this.add(getPetImageForm());
-        this.add(getSubmitter());
+        initialize();
     }
 
     /**
@@ -272,6 +271,12 @@ public abstract class PetEditPageBase extends AdministrationPageBase {
             this.unitPrice = new RangeField<>("unitPrice", Integer.class, value, min, max, step); //$NON-NLS-1$
         }
         return this.unitPrice;
+    }
+
+    private void initialize() {
+        this.add(getForm());
+        this.add(getPetImageForm());
+        this.add(getSubmitter());
     }
 
     private static boolean isBlank(final String s) {

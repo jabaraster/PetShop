@@ -93,7 +93,7 @@ public class PetListPage extends RestrictedPageBase {
 
     private CartPanel getCart() {
         if (this.cart == null) {
-            this.cart = new CartPanel("cart", LoginUserHolder.get(getHttpSession())); //$NON-NLS-1$
+            this.cart = new CartPanel("cart", LoginUserHolder.get(getPetShopApplication().getHttpSession())); //$NON-NLS-1$
         }
         return this.cart;
     }
@@ -159,7 +159,7 @@ public class PetListPage extends RestrictedPageBase {
         }
 
         void onThrowToCart(final EPet pPet, final AjaxRequestTarget pTarget) {
-            PetListPage.this.cartService.addOrder(LoginUserHolder.get(getHttpSession()), pPet);
+            PetListPage.this.cartService.addOrder(LoginUserHolder.get(getPetShopApplication().getHttpSession()), pPet);
             pTarget.add(getCart());
         }
     }

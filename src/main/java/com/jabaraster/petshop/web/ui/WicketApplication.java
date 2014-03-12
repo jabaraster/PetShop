@@ -10,6 +10,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.wicket.Page;
 import org.apache.wicket.Session;
 import org.apache.wicket.core.util.resource.UrlResourceStream;
@@ -19,6 +22,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.request.resource.ResourceStreamResource;
@@ -31,14 +35,13 @@ import com.jabaraster.petshop.web.ui.page.AdministrationPageBase;
 import com.jabaraster.petshop.web.ui.page.LoginPage;
 import com.jabaraster.petshop.web.ui.page.LogoutPage;
 import com.jabaraster.petshop.web.ui.page.PetEditPage;
-import com.jabaraster.petshop.web.ui.page.PetEditPageBase;
 import com.jabaraster.petshop.web.ui.page.PetListPage;
 import com.jabaraster.petshop.web.ui.page.PetNewPage;
 import com.jabaraster.petshop.web.ui.page.RestrictedPageBase;
 import com.jabaraster.petshop.web.ui.page.UserDeletePage;
-import com.jabaraster.petshop.web.ui.page.UserInsertPage;
+import com.jabaraster.petshop.web.ui.page.UserNewPage;
 import com.jabaraster.petshop.web.ui.page.UserListPage;
-import com.jabaraster.petshop.web.ui.page.UserUpdatePage;
+import com.jabaraster.petshop.web.ui.page.UserEditPage;
 import com.jabaraster.petshop.web.ui.page.WebPageBase;
 
 /**
@@ -49,7 +52,7 @@ public class WicketApplication extends WebApplication {
     private static final String       ENC    = "UTF-8";  //$NON-NLS-1$
 
     private static List<MenuInfo>     _menus = Collections.unmodifiableList(Arrays.asList(new MenuInfo[] { //
-                                                     new MenuInfo(PetEditPageBase.class, Models.readOnly("ペット登録")) // //$NON-NLS-1$
+                                                     new MenuInfo(PetNewPage.class, Models.readOnly("ペット登録")) // //$NON-NLS-1$
             , new MenuInfo(UserListPage.class, Models.readOnly("ユーザ一覧")) // //$NON-NLS-1$
                                                      }));
 
@@ -69,6 +72,16 @@ public class WicketApplication extends WebApplication {
     @Override
     public Class<? extends Page> getHomePage() {
         return PetListPage.class;
+    }
+
+    /**
+     * {@link HttpSession}を取得するメソッドをどこに持たせるかは、非常に悩む. <br>
+     * 
+     * @return -
+     */
+    @SuppressWarnings("static-method")
+    public HttpSession getHttpSession() {
+        return ((HttpServletRequest) RequestCycle.get().getRequest().getContainerRequest()).getSession();
     }
 
     /**
@@ -186,8 +199,8 @@ public class WicketApplication extends WebApplication {
 
         this.mountPage("user/", UserListPage.class);
         this.mountPage("user/index", UserListPage.class);
-        this.mountPage("user/new", UserInsertPage.class);
-        this.mountPage("user/edit", UserUpdatePage.class);
+        this.mountPage("user/new", UserNewPage.class);
+        this.mountPage("user/edit", UserEditPage.class);
         this.mountPage("user/delete", UserDeletePage.class);
     }
 

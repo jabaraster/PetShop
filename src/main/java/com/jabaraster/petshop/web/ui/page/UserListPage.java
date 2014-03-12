@@ -95,7 +95,7 @@ public class UserListPage extends AdministrationPageBase {
 
     private Link<?> getAdder() {
         if (this.adder == null) {
-            this.adder = new BookmarkablePageLink<>("adder", UserInsertPage.class); //$NON-NLS-1$
+            this.adder = new BookmarkablePageLink<>("adder", UserNewPage.class); //$NON-NLS-1$
         }
         return this.adder;
     }
@@ -147,10 +147,10 @@ public class UserListPage extends AdministrationPageBase {
             final IProducer2<EUser, PageParameters> p = new IProducer2<EUser, PageParameters>() {
                 @Override
                 public PageParameters produce(final EUser pArgument) {
-                    return UserEditPage.createParameters(pArgument);
+                    return UserEditPageBase.createParameters(pArgument);
                 }
             };
-            columns.add(new EditLinkColumn<>(Models.readOnly("編集"), UserUpdatePage.class, p)); //$NON-NLS-1$
+            columns.add(new EditLinkColumn<>(Models.readOnly("編集"), UserEditPage.class, p)); //$NON-NLS-1$
             columns.add(new UserDeleteLinkColumn(Models.readOnly("削除"), p)); //$NON-NLS-1$
 
             this.users = new AjaxFallbackDefaultDataTable<>( //

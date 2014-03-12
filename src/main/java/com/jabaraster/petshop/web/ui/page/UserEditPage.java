@@ -3,12 +3,9 @@
  */
 package com.jabaraster.petshop.web.ui.page;
 
-import jabara.general.ArgUtil;
 import jabara.general.NotFound;
 import jabara.wicket.ComponentCssHeaderItem;
 import jabara.wicket.ErrorClassAppender;
-import jabara.wicket.JavaScriptUtil;
-import jabara.wicket.beaneditor.BeanEditor;
 
 import java.io.Serializable;
 
@@ -19,57 +16,63 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
 import org.apache.wicket.markup.html.panel.ComponentFeedbackPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.StringValueConversionException;
 
-import com.jabaraster.petshop.entity.ELoginPassword_;
 import com.jabaraster.petshop.entity.EUser;
 import com.jabaraster.petshop.entity.EUser_;
 import com.jabaraster.petshop.model.Duplicate;
+import com.jabaraster.petshop.model.UnmatchPassword;
 import com.jabaraster.petshop.service.IUserService;
+import com.jabaraster.petshop.web.ui.AppSession;
 import com.jabaraster.petshop.web.ui.component.BodyCssHeaderItem;
 
 /**
  * @author jabaraster
  */
-@SuppressWarnings("synthetic-access")
-public abstract class UserEditPage extends RestrictedPageBase {
-    private static final long   serialVersionUID = 7454930682959012116L;
+public class UserEditPage extends RestrictedPageBase {
+    private static final long   serialVersionUID = -1979174828823637569L;
 
     /**
      * 
      */
     protected final EUser       userValue;
+
+    @SuppressWarnings("synthetic-access")
     private final PasswordValue passwordValue    = new PasswordValue();
 
     @Inject
     IUserService                userService;
 
+    @SuppressWarnings("synthetic-access")
     private final Handler       handler          = new Handler();
 
+    private Label               userId;
+
+    private Form<?>             authorityForm;
+    private CheckBox            administrator;
+    private AjaxButton          authoritySubmitter;
+
+    private Form<?>             passwordForm;
     private FeedbackPanel       feedback;
-
-    private Form<?>             form;
-    private BeanEditor<EUser>   editor;
-    private PasswordTextField   password;
-    private FeedbackPanel       passwordFeedback;
-    private PasswordTextField   passwordConfirmation;
-    private FeedbackPanel       passwordConfirmationFeedback;
-    private AjaxButton          submitter;
-
-    /**
-     * 
-     */
-    public UserEditPage() {
-        this(new EUser());
-    }
+    private PasswordTextField   currentPassword;
+    private FeedbackPanel       currentPasswordFeedback;
+    private PasswordTextField   newPassword;
+    private FeedbackPanel       newPasswordFeedback;
+    private PasswordTextField   newPasswordConfirmation;
+    private FeedbackPanel       newPasswordConfirmationFeedback;
+    private AjaxButton          passwordSubmitter;
 
     /**
      * @param pParameters -
@@ -85,14 +88,6 @@ public abstract class UserEditPage extends RestrictedPageBase {
     }
 
     /**
-     * @param pUser -
-     */
-    private UserEditPage(final EUser pUser) {
-        this.userValue = pUser;
-        initialize();
-    }
-
-    /**
      * @see com.jabaraster.petshop.web.ui.page.WebPageBase#renderHead(org.apache.wicket.markup.head.IHeaderResponse)
      */
     @Override
@@ -100,26 +95,67 @@ public abstract class UserEditPage extends RestrictedPageBase {
         super.renderHead(pResponse);
         pResponse.render(BodyCssHeaderItem.get());
         pResponse.render(ComponentCssHeaderItem.forType(UserEditPage.class));
-        try {
-            JavaScriptUtil.addFocusScript(pResponse, getEditor().findInputComponent(EUser_.userId.getName()).getFirstFormComponent());
-        } catch (final NotFound e) {
-            // 処理なし
-        }
     }
 
     /**
-     * @see org.apache.wicket.Page#onBeforeRender()
+     * @see com.jabaraster.petshop.web.ui.page.WebPageBase#getTitleLabelModel()
      */
     @Override
-    protected void onBeforeRender() {
-        super.onBeforeRender();
+    protected IModel<String> getTitleLabelModel() {
+        return Model.of("ユーザ情報更新"); //$NON-NLS-1$
     }
 
-    private BeanEditor<EUser> getEditor() {
-        if (this.editor == null) {
-            this.editor = new BeanEditor<>("editor", this.userValue); //$NON-NLS-1$
+    private CheckBox getAdministrator() {
+        if (this.administrator == null) {
+            this.administrator = new CheckBox( //
+                    EUser_.administrator.getName() //
+                    , new PropertyModel<Boolean>(this.userValue, EUser_.administrator.getName()));
         }
-        return this.editor;
+        return this.administrator;
+    }
+
+    @SuppressWarnings("serial")
+    private Form<?> getAuthorityForm() {
+        if (this.authorityForm == null) {
+            this.authorityForm = new Form<Object>("authorityForm") { //$NON-NLS-1$
+                @Override
+                public boolean isVisible() {
+                    return UserEditPage.this.userService.enableDelete(AppSession.get().getLoginUser(), UserEditPage.this.userValue);
+                }
+            };
+            this.authorityForm.add(getAdministrator());
+            this.authorityForm.add(getAuthoritySubmitter());
+        }
+        return this.authorityForm;
+    }
+
+    @SuppressWarnings("serial")
+    private AjaxButton getAuthoritySubmitter() {
+        if (this.authoritySubmitter == null) {
+            this.authoritySubmitter = new IndicatingAjaxButton("authoritySubmitter") { //$NON-NLS-1$
+                @SuppressWarnings("synthetic-access")
+                @Override
+                protected void onSubmit(final AjaxRequestTarget pTarget, @SuppressWarnings("unused") final Form<?> pForm) {
+                    UserEditPage.this.handler.onAuthoritySubmit(pTarget);
+                }
+            };
+        }
+        return this.authoritySubmitter;
+    }
+
+    private PasswordTextField getCurrentPassword() {
+        if (this.currentPassword == null) {
+            final String s = "currentPassword"; //$NON-NLS-1$
+            this.currentPassword = new PasswordTextField(s, new PropertyModel<String>(this.passwordValue, s));
+        }
+        return this.currentPassword;
+    }
+
+    private FeedbackPanel getCurrentPasswordFeedback() {
+        if (this.currentPasswordFeedback == null) {
+            this.currentPasswordFeedback = new ComponentFeedbackPanel(getCurrentPassword().getId() + "Feedback", getCurrentPassword()); //$NON-NLS-1$
+        }
+        return this.currentPasswordFeedback;
     }
 
     private FeedbackPanel getFeedback() {
@@ -129,113 +165,120 @@ public abstract class UserEditPage extends RestrictedPageBase {
         return this.feedback;
     }
 
-    private Form<?> getForm() {
-        if (this.form == null) {
-            this.form = new Form<>("form"); //$NON-NLS-1$
-            this.form.add(getFeedback());
-            this.form.add(getEditor());
-            this.form.add(getPassword());
-            this.form.add(getPasswordFeedback());
-            this.form.add(getPasswordConfirmation());
-            this.form.add(getPasswordConfirmationFeedback());
-            this.form.add(getSubmitter());
-            this.form.add(new EqualPasswordInputValidator(getPassword(), getPasswordConfirmation()));
+    private PasswordTextField getNewPassword() {
+        if (this.newPassword == null) {
+            final String s = "newPassword"; //$NON-NLS-1$
+            this.newPassword = new PasswordTextField(s, new PropertyModel<String>(this.passwordValue, s));
         }
-        return this.form;
+        return this.newPassword;
     }
 
-    private PasswordTextField getPassword() {
-        if (this.password == null) {
-            final String s = ELoginPassword_.password.getName();
-            this.password = new PasswordTextField(s, new PropertyModel<String>(this.passwordValue, s));
+    private PasswordTextField getNewPasswordConfirmation() {
+        if (this.newPasswordConfirmation == null) {
+            final String s = getNewPassword().getId() + "Confirmation"; //$NON-NLS-1$
+            this.newPasswordConfirmation = new PasswordTextField(s, new PropertyModel<String>(this.passwordValue, s));
         }
-        return this.password;
+        return this.newPasswordConfirmation;
     }
 
-    private PasswordTextField getPasswordConfirmation() {
-        if (this.passwordConfirmation == null) {
-            final String s = ELoginPassword_.password.getName() + "Confirmation"; //$NON-NLS-1$
-            this.passwordConfirmation = new PasswordTextField(s, new PropertyModel<String>(this.passwordValue, s));
+    private FeedbackPanel getNewPasswordConfirmationFeedback() {
+        if (this.newPasswordConfirmationFeedback == null) {
+            this.newPasswordConfirmationFeedback = new ComponentFeedbackPanel(
+                    getNewPasswordConfirmation().getId() + "Feedback", getNewPasswordConfirmation()); //$NON-NLS-1$
         }
-        return this.passwordConfirmation;
+        return this.newPasswordConfirmationFeedback;
     }
 
-    private FeedbackPanel getPasswordConfirmationFeedback() {
-        if (this.passwordConfirmationFeedback == null) {
-            this.passwordConfirmationFeedback = new ComponentFeedbackPanel(getPasswordConfirmation().getId() + "Feedback", getPasswordConfirmation()); //$NON-NLS-1$
+    private FeedbackPanel getNewPasswordFeedback() {
+        if (this.newPasswordFeedback == null) {
+            this.newPasswordFeedback = new ComponentFeedbackPanel(getNewPassword().getId() + "Feedback", getNewPassword()); //$NON-NLS-1$
         }
-        return this.passwordConfirmationFeedback;
+        return this.newPasswordFeedback;
     }
 
-    private FeedbackPanel getPasswordFeedback() {
-        if (this.passwordFeedback == null) {
-            this.passwordFeedback = new ComponentFeedbackPanel(getPassword().getId() + "Feedback", getPassword()); //$NON-NLS-1$
+    private Form<?> getPasswordForm() {
+        if (this.passwordForm == null) {
+            this.passwordForm = new Form<>("passwordForm"); //$NON-NLS-1$
+            this.passwordForm.add(getFeedback());
+            this.passwordForm.add(getCurrentPassword());
+            this.passwordForm.add(getCurrentPasswordFeedback());
+            this.passwordForm.add(getNewPassword());
+            this.passwordForm.add(getNewPasswordFeedback());
+            this.passwordForm.add(getNewPasswordConfirmation());
+            this.passwordForm.add(getNewPasswordConfirmationFeedback());
+            this.passwordForm.add(getPasswordSubmitter());
+            this.passwordForm.add(new EqualPasswordInputValidator(getNewPassword(), getNewPasswordConfirmation()));
         }
-        return this.passwordFeedback;
+        return this.passwordForm;
     }
 
     @SuppressWarnings("serial")
-    private AjaxButton getSubmitter() {
-        if (this.submitter == null) {
-            this.submitter = new IndicatingAjaxButton("submitter") { //$NON-NLS-1$
+    private AjaxButton getPasswordSubmitter() {
+        if (this.passwordSubmitter == null) {
+            this.passwordSubmitter = new IndicatingAjaxButton("passwordSubmitter") { //$NON-NLS-1$
+                @SuppressWarnings("synthetic-access")
                 @Override
                 protected void onError(final AjaxRequestTarget pTarget, @SuppressWarnings("unused") final Form<?> pForm) {
                     UserEditPage.this.handler.onError(pTarget);
                 }
 
+                @SuppressWarnings("synthetic-access")
                 @Override
                 protected void onSubmit(final AjaxRequestTarget pTarget, @SuppressWarnings("unused") final Form<?> pForm) {
-                    UserEditPage.this.handler.onSubmit(pTarget);
+                    UserEditPage.this.handler.onPasswordSubmit(pTarget);
                 }
             };
         }
-        return this.submitter;
+        return this.passwordSubmitter;
+    }
+
+    private Label getUserId() {
+        if (this.userId == null) {
+            this.userId = new Label(EUser_.userId.getName(), new PropertyModel<String>(this.userValue, EUser_.userId.getName()));
+        }
+        return this.userId;
     }
 
     private void initialize() {
-        this.add(getForm());
+        this.add(getUserId());
+        this.add(getAuthorityForm());
+        this.add(getPasswordForm());
     }
 
-    /**
-     * @param pUser -
-     * @return -
-     */
-    public static PageParameters createParameters(final EUser pUser) {
-        ArgUtil.checkNull(pUser, "pUser"); //$NON-NLS-1$
-        if (!pUser.isPersisted()) {
-            throw new IllegalArgumentException("永続化されていないエンティティは処理出来ません."); //$NON-NLS-1$
-        }
-        return createParameters(pUser.getId().longValue());
-    }
-
-    /**
-     * @param pEUserId -
-     * @return -
-     */
-    public static PageParameters createParameters(final long pEUserId) {
-        final PageParameters ret = new PageParameters();
-        ret.set(0, Long.valueOf(pEUserId));
-        return ret;
-    }
-
+    @SuppressWarnings("synthetic-access")
     private class Handler implements Serializable {
         private static final long        serialVersionUID   = 6149418547207914836L;
 
         private final ErrorClassAppender errorClassAppender = new ErrorClassAppender();
 
-        private void onError(final AjaxRequestTarget pTarget) {
-            this.errorClassAppender.addErrorClass(getForm());
-            pTarget.add(getForm());
-        }
-
-        private void onSubmit(final AjaxRequestTarget pTarget) {
+        private void onAuthoritySubmit(final AjaxRequestTarget pTarget) {
             try {
-                UserEditPage.this.userService.insert(UserEditPage.this.userValue, getPassword().getModelObject());
+                UserEditPage.this.userService.update(UserEditPage.this.userValue);
                 setResponsePage(UserListPage.class);
             } catch (final Duplicate e) {
                 error("ユーザIDは既に使われています."); //$NON-NLS-1$
-                this.errorClassAppender.addErrorClass(getForm());
-                pTarget.add(getForm());
+                this.errorClassAppender.addErrorClass(getPasswordForm());
+                pTarget.add(getPasswordForm());
+            }
+        }
+
+        private void onError(final AjaxRequestTarget pTarget) {
+            this.errorClassAppender.addErrorClass(getPasswordForm());
+            pTarget.add(getPasswordForm());
+        }
+
+        private void onPasswordSubmit(final AjaxRequestTarget pTarget) {
+            try {
+                UserEditPage.this.userService.updatePassword( //
+                        UserEditPage.this.userValue //
+                        , getCurrentPassword().getModelObject() //
+                        , getNewPassword().getModelObject() //
+                        );
+                setResponsePage(UserListPage.class);
+            } catch (final UnmatchPassword e) {
+                error("パスワードが一致しません."); //$NON-NLS-1$
+                this.errorClassAppender.addErrorClass(getPasswordForm());
+                pTarget.add(getPasswordForm());
             }
         }
     }
@@ -244,35 +287,50 @@ public abstract class UserEditPage extends RestrictedPageBase {
     private static class PasswordValue implements Serializable {
         private static final long serialVersionUID = 8620839379550673825L;
 
-        private String            password;
-        private String            passwordConfirmation;
+        private String            currentPassword;
+        private String            newPassword;
+        private String            newPasswordConfirmation;
 
         /**
-         * @return the password
+         * @return currentPasswordを返す.
          */
-        public String getPassword() {
-            return this.password;
+        public String getCurrentPassword() {
+            return this.currentPassword;
         }
 
         /**
-         * @return the passwordConfirmation
+         * @return the newPassword
          */
-        public String getPasswordConfirmation() {
-            return this.passwordConfirmation;
+        public String getNewPassword() {
+            return this.newPassword;
         }
 
         /**
-         * @param pPassword the password to set
+         * @return the newPasswordConfirmation
          */
-        public void setPassword(final String pPassword) {
-            this.password = pPassword;
+        public String getNewPasswordConfirmation() {
+            return this.newPasswordConfirmation;
         }
 
         /**
-         * @param pPasswordConfirmation the passwordConfirmation to set
+         * @param pCurrentPassword currentPasswordを設定.
          */
-        public void setPasswordConfirmation(final String pPasswordConfirmation) {
-            this.passwordConfirmation = pPasswordConfirmation;
+        public void setCurrentPassword(final String pCurrentPassword) {
+            this.currentPassword = pCurrentPassword;
+        }
+
+        /**
+         * @param pPassword the newPassword to set
+         */
+        public void setNewPassword(final String pPassword) {
+            this.newPassword = pPassword;
+        }
+
+        /**
+         * @param pPasswordConfirmation the newPasswordConfirmation to set
+         */
+        public void setNewPasswordConfirmation(final String pPasswordConfirmation) {
+            this.newPasswordConfirmation = pPasswordConfirmation;
         }
     }
 }

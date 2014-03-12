@@ -47,7 +47,7 @@ public abstract class RestrictedPageBase extends WebPageBase {
     @Override
     protected IModel<? extends List<? extends MenuInfo>> getLeftAlighMenusModel() {
         final List<MenuInfo> menus = getPetShopApplication().getMenus();
-        if (LoginUserHolder.get(getHttpSession()).isAdministrator()) {
+        if (LoginUserHolder.get(getPetShopApplication().getHttpSession()).isAdministrator()) {
             return Models.ofList(menus);
         }
 
