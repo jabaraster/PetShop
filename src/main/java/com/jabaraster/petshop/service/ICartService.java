@@ -5,8 +5,8 @@ package com.jabaraster.petshop.service;
 
 import com.google.inject.ImplementedBy;
 import com.jabaraster.petshop.entity.ECart;
+import com.jabaraster.petshop.entity.EOrder;
 import com.jabaraster.petshop.entity.EPet;
-import com.jabaraster.petshop.model.LoginUser;
 import com.jabaraster.petshop.service.impl.CartServiceImpl;
 
 /**
@@ -16,15 +16,21 @@ import com.jabaraster.petshop.service.impl.CartServiceImpl;
 public interface ICartService {
 
     /**
-     * @param pUser -
+     * @param pUserId -
      * @param pPet -
      */
-    void addOrder(final LoginUser pUser, final EPet pPet);
+    void addOrder(final long pUserId, final EPet pPet);
 
     /**
      * @param pUserId -
      * @return -
      */
     ECart findByUserId(final long pUserId);
+
+    /**
+     * @param pUserId -
+     * @param pOrder -
+     */
+    void removeOrder(final long pUserId, final EOrder pOrder);
 
 }

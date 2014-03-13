@@ -36,7 +36,7 @@ public class LoginPage extends WebPageBase {
     @Override
     public void renderHead(final IHeaderResponse pResponse) {
         super.renderHead(pResponse);
-        pResponse.render(ComponentJavaScriptHeaderItem.forType(LoginPage.class));
+        pResponse.render(ComponentJavaScriptHeaderItem.minimizedForType(LoginPage.class));
     }
 
     /**

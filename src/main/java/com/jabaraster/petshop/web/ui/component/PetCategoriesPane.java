@@ -3,6 +3,7 @@
  */
 package com.jabaraster.petshop.web.ui.component;
 
+import jabara.wicket.ComponentJavaScriptHeaderItem;
 import jabara.wicket.IAjaxCallback;
 import jabara.wicket.NullAjaxCallback;
 
@@ -12,9 +13,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
@@ -62,6 +65,19 @@ public class PetCategoriesPane extends Panel {
             }
         }
         return ret;
+    }
+
+    /**
+     * @see org.apache.wicket.Component#renderHead(org.apache.wicket.markup.head.IHeaderResponse)
+     */
+    @Override
+    public void renderHead(final IHeaderResponse pResponse) {
+        super.renderHead(pResponse);
+        if (getApplication().getConfigurationType() == RuntimeConfigurationType.DEVELOPMENT) {
+            pResponse.render(ComponentJavaScriptHeaderItem.forType(PetCategoriesPane.class));
+        } else {
+            pResponse.render(ComponentJavaScriptHeaderItem.minimizedForType(PetCategoriesPane.class));
+        }
     }
 
     /**

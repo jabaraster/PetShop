@@ -19,7 +19,6 @@ import com.jabaraster.petshop.entity.ECart_;
 import com.jabaraster.petshop.entity.EOrder;
 import com.jabaraster.petshop.entity.EPet;
 import com.jabaraster.petshop.entity.EUser;
-import com.jabaraster.petshop.model.LoginUser;
 import com.jabaraster.petshop.service.ICartService;
 import com.jabaraster.petshop.service.IUserService;
 
@@ -45,16 +44,15 @@ public class CartServiceImpl extends JpaDaoBase implements ICartService {
     }
 
     /**
-     * @see com.jabaraster.petshop.service.ICartService#addOrder(com.jabaraster.petshop.model.LoginUser, com.jabaraster.petshop.entity.EPet)
+     * @see com.jabaraster.petshop.service.ICartService#addOrder(long, com.jabaraster.petshop.entity.EPet)
      */
     @Override
-    public void addOrder(final LoginUser pUser, final EPet pPet) {
-        ArgUtil.checkNull(pUser, "pUser"); //$NON-NLS-1$
+    public void addOrder(final long pUserId, final EPet pPet) {
         ArgUtil.checkNull(pPet, "pPet"); //$NON-NLS-1$
 
         final EUser user;
         try {
-            user = this.userService.findById(pUser.getId());
+            user = this.userService.findById(pUserId);
         } catch (final NotFound e) {
             // ログインしているユーザが管理者によって削除された場合はここが実行される可能性がある.
             return;
@@ -83,6 +81,29 @@ public class CartServiceImpl extends JpaDaoBase implements ICartService {
             // ログインしているユーザが管理者によって削除された場合はここが実行される可能性がある.
             throw new IllegalStateException();
         }
+    }
+
+    /**
+     * @see com.jabaraster.petshop.service.ICartService#removeOrder(long, com.jabaraster.petshop.entity.EOrder)
+     */
+    @Override
+    public void removeOrder(final long pUserId, final EOrder pOrder) {
+        ArgUtil.checkNull(pOrder, "pOrder"); //$NON-NLS-1$
+
+        final EUser user;
+        try {
+            user = this.userService.findById(pUserId);
+        } catch (final NotFound e) {
+            // ログインしているユーザが管理者によって削除された場合はここが実行される可能性がある.
+            return;
+        }
+
+        final ECart cart = getUserCart(user);
+        final EntityManager em = getEntityManager();
+        final EOrder merged = em.merge(pOrder);
+
+        cart.getOrders().remove(merged);
+        getEntityManager().remove(merged);
     }
 
     private ECart getUserCart(final EUser pUser) {

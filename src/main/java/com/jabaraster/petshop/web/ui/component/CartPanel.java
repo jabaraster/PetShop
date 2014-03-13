@@ -5,10 +5,13 @@ package com.jabaraster.petshop.web.ui.component;
 
 import jabara.general.ArgUtil;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -24,6 +27,8 @@ import com.jabaraster.petshop.service.ICartService;
  */
 public class CartPanel extends Panel {
     private static final long serialVersionUID = 8875179468600843699L;
+
+    private final Handler     handler          = new Handler();
 
     @Inject
     ICartService              cartService;
@@ -52,6 +57,12 @@ public class CartPanel extends Panel {
                     final EOrder order = pItem.getModelObject();
                     pItem.add(new Label("petName", order.getPet().getName())); //$NON-NLS-1$
                     pItem.add(new Label("quantity", Integer.valueOf(order.getQuantity()))); //$NON-NLS-1$
+                    pItem.add(new IndicatingAjaxLink<Object>("remover") { //$NON-NLS-1$
+                        @Override
+                        public void onClick(final AjaxRequestTarget pTarget) {
+                            CartPanel.this.handler.removeOrder(order, pTarget);
+                        }
+                    });
                 }
             };
         }
@@ -65,5 +76,15 @@ public class CartPanel extends Panel {
         protected List<EOrder> load() {
             return CartPanel.this.cartService.findByUserId(CartPanel.this.loginUser.getId()).getOrders();
         }
+    }
+
+    private class Handler implements Serializable {
+        private static final long serialVersionUID = -8205463552413175139L;
+
+        void removeOrder(final EOrder pOrder, final AjaxRequestTarget pTarget) {
+            CartPanel.this.cartService.removeOrder(CartPanel.this.loginUser.getId(), pOrder);
+            pTarget.add(CartPanel.this);
+        }
+
     }
 }

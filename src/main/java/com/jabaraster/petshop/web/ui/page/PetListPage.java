@@ -26,6 +26,7 @@ import org.apache.wicket.model.IModel;
 import com.jabaraster.petshop.entity.EPet;
 import com.jabaraster.petshop.entity.EPetImageData;
 import com.jabaraster.petshop.entity.EPet_;
+import com.jabaraster.petshop.model.LoginUser;
 import com.jabaraster.petshop.service.ICartService;
 import com.jabaraster.petshop.service.IPetService;
 import com.jabaraster.petshop.web.LoginUserHolder;
@@ -159,7 +160,8 @@ public class PetListPage extends RestrictedPageBase {
         }
 
         void onThrowToCart(final EPet pPet, final AjaxRequestTarget pTarget) {
-            PetListPage.this.cartService.addOrder(LoginUserHolder.get(getPetShopApplication().getHttpSession()), pPet);
+            final LoginUser loginUser = LoginUserHolder.get(getPetShopApplication().getHttpSession());
+            PetListPage.this.cartService.addOrder(loginUser.getId(), pPet);
             pTarget.add(getCart());
         }
     }
