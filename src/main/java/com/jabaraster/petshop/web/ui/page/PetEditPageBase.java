@@ -10,6 +10,7 @@ import jabara.general.NotFound;
 import jabara.general.io.DataOperation;
 import jabara.jpa.entity.EntityBase_;
 import jabara.wicket.ComponentCssHeaderItem;
+import jabara.wicket.ComponentJavaScriptHeaderItem;
 import jabara.wicket.ErrorClassAppender;
 import jabara.wicket.FileUploadPanel;
 import jabara.wicket.Models;
@@ -26,7 +27,9 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
+import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -40,6 +43,8 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.CssResourceReference;
+import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.request.resource.ResourceStreamResource;
 import org.apache.wicket.util.resource.AbstractResourceStream;
 import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
@@ -58,34 +63,41 @@ import com.jabaraster.petshop.web.ui.component.RangeField;
  * @author jabaraster
  */
 public abstract class PetEditPageBase extends AdministrationPageBase {
-    private static final long         serialVersionUID = 4199480329927173656L;
+    private static final long                        serialVersionUID                 = 4199480329927173656L;
+
+    private static final CssResourceReference        REF_VALIDATION_ENGINE_CSS        = new CssResourceReference(PetListPage.class,
+                                                                                              "validation_engine/css/validationEngine.jquery.css"); //$NON-NLS-1$
+    private static final JavaScriptResourceReference REF_VALIDATION_ENGINE_JS         = new JavaScriptResourceReference(PetListPage.class,
+                                                                                              "validation_engine/js/jquery.validationEngine.js");   //$NON-NLS-1$
+    private static final JavaScriptResourceReference REF_VALIDATION_ENGINE_MESSAGE_JS = new JavaScriptResourceReference(PetListPage.class,
+                                                                                              "validation_engine/js/jquery.validationEngine-ja.js"); //$NON-NLS-1$
 
     @Inject
-    IPetService                       petService;
+    IPetService                                      petService;
 
     @Inject
-    IPetCategoryService               petCategoryService;
+    IPetCategoryService                              petCategoryService;
 
     /**
      * 
      */
-    protected final EPet              pet;
+    protected final EPet                             pet;
 
-    private final Handler             handler          = new Handler();
+    private final Handler                            handler                          = new Handler();
 
-    private Form<?>                   form;
-    private FeedbackPanel             feedback;
-    private TextField<String>         name;
-    private RadioChoice<EPetCategory> category;
-    private TextField<String>         newName;
-    private RangeField<Integer>       unitPrice;
+    private Form<?>                                  form;
+    private FeedbackPanel                            feedback;
+    private TextField<String>                        name;
+    private RadioChoice<EPetCategory>                category;
+    private TextField<String>                        newName;
+    private RangeField<Integer>                      unitPrice;
 
-    private Form<?>                   petImageForm;
-    private FileUploadPanel           petImage;
-    private FeedbackPanel             petImageFeedback;
-    private NonCachingImage           currentImage;
+    private Form<?>                                  petImageForm;
+    private FileUploadPanel                          petImage;
+    private FeedbackPanel                            petImageFeedback;
+    private NonCachingImage                          currentImage;
 
-    private AjaxButton                submitter;
+    private AjaxButton                               submitter;
 
     /**
      *
@@ -122,6 +134,11 @@ public abstract class PetEditPageBase extends AdministrationPageBase {
     public void renderHead(final IHeaderResponse pResponse) {
         super.renderHead(pResponse);
         pResponse.render(ComponentCssHeaderItem.forType(PetEditPageBase.class));
+        pResponse.render(ComponentJavaScriptHeaderItem.forType(PetEditPageBase.class));
+
+        pResponse.render(CssHeaderItem.forReference(REF_VALIDATION_ENGINE_CSS));
+        pResponse.render(JavaScriptHeaderItem.forReference(REF_VALIDATION_ENGINE_JS));
+        pResponse.render(JavaScriptHeaderItem.forReference(REF_VALIDATION_ENGINE_MESSAGE_JS));
     }
 
     /**

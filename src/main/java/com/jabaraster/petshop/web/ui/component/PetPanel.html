@@ -11,17 +11,17 @@
 
   <form wicket:id="form">
     <fieldset>
-      <legend wicket:id="name"></legend>
-
-      <div wicket:id="administrationMenuContainer" class="btn-group">
-        <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown">
-          管理アクション <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu">
-          <li><a wicket:id="goEdit" href="#">編集</a></li>
-          <!-- li class="divider"></li -->
-        </ul>
-      </div>
+      <legend>
+        <span wicket:id="name"></span>
+        <div wicket:id="administrationMenuContainer" class="btn-group">
+          <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown">
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li><a wicket:id="goEdit" href="#">編集</a></li>
+          </ul>
+        </div>
+      </legend>
 
       <img wicket:id="image" class="petImage" />
       <label wicket:id="unitPrice"></label>
