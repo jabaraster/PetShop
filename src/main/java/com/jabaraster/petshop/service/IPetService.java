@@ -43,7 +43,7 @@ public interface IPetService {
     /**
      * @param pFirst -
      * @param pCount -
-     * @param pCategories null及び空リストの指定は不可.
+     * @param pCategories null及び空リストを指定した場合、カテゴリでの絞り込みを行わない.
      * @param pSortProperty -
      * @param pAscending -
      * @return -

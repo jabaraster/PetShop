@@ -19,7 +19,7 @@ public abstract class AdministrationPageBase extends RestrictedPageBase {
     }
 
     /**
-     * @param pParameters
+     * @param pParameters -
      */
     public AdministrationPageBase(final PageParameters pParameters) {
         super(pParameters);

@@ -49,30 +49,24 @@ import com.jabaraster.petshop.web.ui.component.BodyCssHeaderItem;
  */
 @SuppressWarnings("synthetic-access")
 public abstract class UserEditPageBase extends RestrictedPageBase {
-    private static final long                        serialVersionUID               = 7454930682959012116L;
+    private static final long                        serialVersionUID         = 7454930682959012116L;
 
-    private static final CssResourceReference        CSS_REF_VALIDATE_ENGINE        = new CssResourceReference(PetListPage.class,
-                                                                                            "validationEngine/css/validationEngine.jquery.css"); //$NON-NLS-1$
-    private static final JavaScriptResourceReference JS_REF_VALIDATE_ENGINE         = new JavaScriptResourceReference(PetListPage.class,
-                                                                                            "validationEngine/js/jquery.validationEngine.js");   //$NON-NLS-1$
-    private static final JavaScriptResourceReference JS_REF_VALIDATE_ENGINE_MESSAGE = new JavaScriptResourceReference(PetListPage.class,
-                                                                                            "validationEngine/js/jquery.validationEngine-ja.js"); //$NON-NLS-1$
-    private static final CssResourceReference        CSS_REF_BOOTSTRAP_SWITCH       = new CssResourceReference(PetListPage.class,
-                                                                                            "bootstrapSwitch/css/bootstrap-switch.min.css");     //$NON-NLS-1$
-    private static final JavaScriptResourceReference JS_REF_BOOTSTRAP_SWITCH        = new JavaScriptResourceReference(PetListPage.class,
-                                                                                            "bootstrapSwitch/js/bootstrap-switch.min.js");       //$NON-NLS-1$
+    private static final CssResourceReference        CSS_REF_BOOTSTRAP_SWITCH = new CssResourceReference(PetListPage.class,
+                                                                                      "bootstrapSwitch/css/bootstrap-switch.min.css"); //$NON-NLS-1$
+    private static final JavaScriptResourceReference JS_REF_BOOTSTRAP_SWITCH  = new JavaScriptResourceReference(PetListPage.class,
+                                                                                      "bootstrapSwitch/js/bootstrap-switch.min.js");  //$NON-NLS-1$
 
     /**
      * 
      */
     protected final EUser                            userValue;
 
-    private final PasswordValue                      passwordValue                  = new PasswordValue();
+    private final PasswordValue                      passwordValue            = new PasswordValue();
 
     @Inject
     IUserService                                     userService;
 
-    private final Handler                            handler                        = new Handler();
+    private final Handler                            handler                  = new Handler();
 
     private FeedbackPanel                            feedback;
 
@@ -126,9 +120,7 @@ public abstract class UserEditPageBase extends RestrictedPageBase {
         pResponse.render(CssHeaderItem.forReference(CSS_REF_BOOTSTRAP_SWITCH));
         pResponse.render(JavaScriptHeaderItem.forReference(JS_REF_BOOTSTRAP_SWITCH));
 
-        pResponse.render(CssHeaderItem.forReference(CSS_REF_VALIDATE_ENGINE));
-        pResponse.render(JavaScriptHeaderItem.forReference(JS_REF_VALIDATE_ENGINE));
-        pResponse.render(JavaScriptHeaderItem.forReference(JS_REF_VALIDATE_ENGINE_MESSAGE));
+        ValidationReferences.render(pResponse);
 
         pResponse.render(ComponentJavaScriptHeaderItem.minimizedForType(UserEditPageBase.class));
         try {
@@ -144,6 +136,12 @@ public abstract class UserEditPageBase extends RestrictedPageBase {
     @Override
     protected void onBeforeRender() {
         super.onBeforeRender();
+        try {
+            final FormComponent<?> input = getEditor().findInputComponent(EUser_.userId.getName()).getFirstFormComponent();
+            input.add(AttributeModifier.append("class", "validate[required]")); //$NON-NLS-1$//$NON-NLS-2$
+        } catch (final NotFound e) {
+            throw ExceptionUtil.rethrow(e);
+        }
     }
 
     @SuppressWarnings("serial")

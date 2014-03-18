@@ -80,10 +80,6 @@ public class PetServiceImpl extends JpaDaoBase implements IPetService {
         final int first = convertToInt(pFirst, "pFirst"); //$NON-NLS-1$
         final int count = convertToInt(pCount, "pCount"); //$NON-NLS-1$
 
-        if (pCategories == null || pCategories.isEmpty()) {
-            throw new IllegalStateException();
-        }
-
         final EntityManager em = getEntityManager();
         final CriteriaBuilder builder = em.getCriteriaBuilder();
         final CriteriaQuery<EPet> query = builder.createQuery(EPet.class);
@@ -94,10 +90,11 @@ public class PetServiceImpl extends JpaDaoBase implements IPetService {
         final Sort sort = pAscending ? Sort.asc(pSortProperty) : Sort.desc(pSortProperty);
         query.orderBy(convertOrder(sort, builder, root));
 
-        query.where( //
-        root.get(EPet_.category).in(pCategories) //
-        );
-
+        if (pCategories != null && !pCategories.isEmpty()) {
+            query.where( //
+            root.get(EPet_.category).in(pCategories) //
+            );
+        }
         return em.createQuery(query).setFirstResult(first).setMaxResults(count).getResultList();
     }
 

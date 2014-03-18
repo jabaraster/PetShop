@@ -14,12 +14,12 @@
       <wicket:container wicket:id="editor"></wicket:container>
       <li class="input">
         <span class="label">パスワード</span>
-        <input type="password" wicket:id="password"/>
+        <input type="password" wicket:id="password" class="validate[required]"/>
         <div wicket:id="passwordFeedback" class="feedback"></div>
       </li>
       <li class="input">
         <span class="label">パスワード（確認）</span>
-        <input type="password" wicket:id="passwordConfirmation"/>
+        <input type="password" wicket:id="passwordConfirmation" class="validate[required]"/>
         <div wicket:id="passwordConfirmationFeedback" class="feedback"></div>
       </li>
     </ul>

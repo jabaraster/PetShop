@@ -266,7 +266,7 @@
                         <!-- <systemProperty> <key>wicket.configuration</key> <value>deployment</value> 
                             </systemProperty> -->
                         <systemProperty>
-                            <key>memcached.servers</key>
+                            <key>memcached.servers_</key>
                             <value>localhost:11211</value>
                         </systemProperty>
                     </systemProperties>
