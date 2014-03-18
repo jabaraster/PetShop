@@ -20,8 +20,12 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 
 import lombok.NoArgsConstructor;
+
+import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  * @author jabaraster
@@ -35,6 +39,11 @@ public class EPetImageData extends EntityBase<EPetImageData> {
      * 
      */
     public static final int   MAX_CHAR_COUNT_CONTENT_TYPE = 100;
+
+    /**
+     * 
+     */
+    public static final int   MAX_CHAR_COUNT_HASH         = 32;
 
     /**
      * 
@@ -55,6 +64,12 @@ public class EPetImageData extends EntityBase<EPetImageData> {
      */
     @Column(nullable = false, length = MAX_CHAR_COUNT_CONTENT_TYPE)
     protected String          contentType;
+
+    /**
+     * 
+     */
+    @Column(nullable = false, length = MAX_CHAR_COUNT_HASH)
+    protected String          hash;
 
     /**
      * @param pPet -
@@ -88,6 +103,19 @@ public class EPetImageData extends EntityBase<EPetImageData> {
      */
     public InputStream getDataStream() {
         return new ByteArrayInputStream(this.data.clone());
+    }
+
+    /**
+     * @return hashを返す.
+     */
+    public String getHash() {
+        return this.hash;
+    }
+
+    @PrePersist
+    @PreUpdate
+    void computeHash() {
+        this.hash = DigestUtils.md5Hex(this.data);
     }
 
     @SuppressWarnings("resource")

@@ -11,6 +11,7 @@ import jabara.general.io.DataOperation;
 import jabara.general.io.DataOperation.Operation;
 import jabara.general.io.IReadableData;
 import jabara.jpa.JpaDaoBase;
+import jabara.jpa.entity.EntityBase_;
 
 import java.util.List;
 
@@ -31,8 +32,9 @@ import com.jabaraster.petshop.service.IPetService;
 
 /**
  * @author jabaraster
+ * @param <D>
  */
-public class PetServiceImpl extends JpaDaoBase implements IPetService {
+public class PetServiceImpl<D> extends JpaDaoBase implements IPetService {
     private static final long         serialVersionUID = -7494555889492182446L;
 
     private final IPetCategoryService petCategoryService;
@@ -116,6 +118,37 @@ public class PetServiceImpl extends JpaDaoBase implements IPetService {
             throw NotFound.GLOBAL;
         }
         return findImageDataByPetCore(pPet);
+    }
+
+    /**
+     * @see com.jabaraster.petshop.service.IPetService#findImageDataByPetImageDataId(long)
+     */
+    @Override
+    public EPetImageData findImageDataByPetImageDataId(final long pPetImageDataId) throws NotFound {
+        final EntityManager em = getEntityManager();
+        final CriteriaBuilder builder = em.getCriteriaBuilder();
+        final CriteriaQuery<EPetImageData> query = builder.createQuery(EPetImageData.class);
+        final Root<EPetImageData> root = query.from(EPetImageData.class);
+
+        query.where(builder.equal(root.get(EntityBase_.id), Long.valueOf(pPetImageDataId)));
+
+        return getSingleResult(em.createQuery(query));
+    }
+
+    /**
+     * @see com.jabaraster.petshop.service.IPetService#findImageDataHashByImageDataId(long)
+     */
+    @Override
+    public String findImageDataHashByImageDataId(final long pPetImageDataId) throws NotFound {
+        final EntityManager em = getEntityManager();
+        final CriteriaBuilder builder = em.getCriteriaBuilder();
+        final CriteriaQuery<String> query = builder.createQuery(String.class);
+        final Root<EPetImageData> root = query.from(EPetImageData.class);
+
+        query.where(builder.equal(root.get(EntityBase_.id), Long.valueOf(pPetImageDataId)));
+        query.select(root.get(EPetImageData_.hash));
+
+        return getSingleResult(em.createQuery(query));
     }
 
     /**
@@ -208,5 +241,4 @@ public class PetServiceImpl extends JpaDaoBase implements IPetService {
         deletePetImage(pPet);
         getEntityManager().persist(new EPetImageData(pPet, pData));
     }
-
 }

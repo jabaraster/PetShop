@@ -4,7 +4,6 @@
 package com.jabaraster.petshop.web.ui.component;
 
 import jabara.general.ArgUtil;
-import jabara.general.Empty;
 import jabara.wicket.IAjaxCallback;
 import jabara.wicket.NullAjaxCallback;
 
@@ -13,19 +12,18 @@ import java.text.NumberFormat;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.request.resource.ByteArrayResource;
 
 import com.jabaraster.petshop.entity.EPet;
 import com.jabaraster.petshop.entity.EPetImageData;
@@ -46,7 +44,7 @@ public class PetPanel extends Panel {
 
     private Form<?>             form;
     private Label               name;
-    private Image               image;
+    private WebMarkupContainer  image;
     private Label               unitPrice;
     private AjaxButton          cartThrower;
 
@@ -134,15 +132,16 @@ public class PetPanel extends Panel {
         return this.goEdit;
     }
 
-    private Image getImage() {
+    private WebMarkupContainer getImage() {
         if (this.image == null) {
             final String ID = "image"; //$NON-NLS-1$
             if (this.imageData == null) {
-                this.image = new Image(ID, Empty.STRING);
+                this.image = new WebMarkupContainer(ID);
                 this.image.setVisible(false);
             } else {
-                final ByteArrayResource byteArrayResource = new ByteArrayResource(this.imageData.getContentType(), this.imageData.getData());
-                this.image = new Image(ID, byteArrayResource);
+                this.image = new WebMarkupContainer(ID);
+                this.image.add(AttributeModifier.replace("src" //$NON-NLS-1$
+                        , RequestCycle.get().getRequest().getContextPath() + "/rest/pet/images/" + this.imageData.getId().longValue())); //$NON-NLS-1$
             }
         }
         return this.image;

@@ -28,6 +28,13 @@ public interface IPetService {
     EPet findById(final long pId) throws NotFound;
 
     /**
+     * @param pPetImageDataId -
+     * @return -
+     * @throws NotFound -
+     */
+    EPetImageData findImageDataByPetImageDataId(final long pPetImageDataId) throws NotFound;
+
+    /**
      * @param pPet -
      * @param pImageDataOperation -
      */
@@ -61,4 +68,11 @@ public interface IPetService {
      * @throws NotFound -
      */
     EPetImageData findImageDataByPet(final EPet pPet) throws NotFound;
+
+    /**
+     * @param pPetImageDataId -
+     * @return -
+     * @throws NotFound -
+     */
+    String findImageDataHashByImageDataId(final long pPetImageDataId) throws NotFound;
 }
