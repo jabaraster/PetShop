@@ -66,11 +66,11 @@ public abstract class PetEditPageBase extends AdministrationPageBase {
     private static final long                        serialVersionUID                 = 4199480329927173656L;
 
     private static final CssResourceReference        REF_VALIDATION_ENGINE_CSS        = new CssResourceReference(PetListPage.class,
-                                                                                              "validation_engine/css/validationEngine.jquery.css"); //$NON-NLS-1$
+                                                                                              "validationEngine/css/validationEngine.jquery.css"); //$NON-NLS-1$
     private static final JavaScriptResourceReference REF_VALIDATION_ENGINE_JS         = new JavaScriptResourceReference(PetListPage.class,
-                                                                                              "validation_engine/js/jquery.validationEngine.js");   //$NON-NLS-1$
+                                                                                              "validationEngine/js/jquery.validationEngine.js");   //$NON-NLS-1$
     private static final JavaScriptResourceReference REF_VALIDATION_ENGINE_MESSAGE_JS = new JavaScriptResourceReference(PetListPage.class,
-                                                                                              "validation_engine/js/jquery.validationEngine-ja.js"); //$NON-NLS-1$
+                                                                                              "validationEngine/js/jquery.validationEngine-ja.js"); //$NON-NLS-1$
 
     @Inject
     IPetService                                      petService;
