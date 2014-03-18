@@ -20,7 +20,7 @@ public class RestApplication extends Application {
     public Set<Class<?>> getClasses() {
         return new HashSet<>(Arrays.asList(new Class<?>[] { //
                 JsonMessageBodyReaderWriter.class // JSONをきれいに返すにはこのクラスが必要.
-                        , UserResource.class //
+                        , PetResource.class //
                 }));
     }
 }

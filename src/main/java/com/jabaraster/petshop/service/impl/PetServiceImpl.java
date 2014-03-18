@@ -38,7 +38,7 @@ public class PetServiceImpl extends JpaDaoBase implements IPetService {
     private final IPetCategoryService petCategoryService;
 
     /**
-     * @param pEntityManagerFactory
+     * @param pEntityManagerFactory -
      * @param pPetCategoryService -
      */
     @Inject

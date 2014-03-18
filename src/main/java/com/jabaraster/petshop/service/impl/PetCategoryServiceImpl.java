@@ -27,7 +27,7 @@ public class PetCategoryServiceImpl extends JpaDaoBase implements IPetCategorySe
     private static final long serialVersionUID = -7229082780414807053L;
 
     /**
-     * @param pEntityManagerFactory
+     * @param pEntityManagerFactory -
      */
     @Inject
     public PetCategoryServiceImpl(final EntityManagerFactory pEntityManagerFactory) {
