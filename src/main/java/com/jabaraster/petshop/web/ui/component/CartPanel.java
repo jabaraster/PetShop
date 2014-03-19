@@ -20,7 +20,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 
 import com.jabaraster.petshop.entity.EOrder;
 import com.jabaraster.petshop.model.LoginUser;
-import com.jabaraster.petshop.service.ICartService;
+import com.jabaraster.petshop.service.IOrderService;
 
 /**
  * @author jabaraster
@@ -31,7 +31,7 @@ public class CartPanel extends Panel {
     private final Handler     handler          = new Handler();
 
     @Inject
-    ICartService              cartService;
+    IOrderService             orderService;
 
     private final LoginUser   loginUser;
 
@@ -74,7 +74,7 @@ public class CartPanel extends Panel {
 
         @Override
         protected List<EOrder> load() {
-            return CartPanel.this.cartService.findByUserId(CartPanel.this.loginUser.getId()).getOrders();
+            return CartPanel.this.orderService.findByUserId(CartPanel.this.loginUser.getId());
         }
     }
 
@@ -82,7 +82,7 @@ public class CartPanel extends Panel {
         private static final long serialVersionUID = -8205463552413175139L;
 
         void removeOrder(final EOrder pOrder, final AjaxRequestTarget pTarget) {
-            CartPanel.this.cartService.removeOrder(CartPanel.this.loginUser.getId(), pOrder);
+            CartPanel.this.orderService.removeOrder(pOrder);
             pTarget.add(CartPanel.this);
         }
 

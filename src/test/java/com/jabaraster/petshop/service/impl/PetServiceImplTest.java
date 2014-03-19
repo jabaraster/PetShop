@@ -25,7 +25,6 @@ import org.junit.Test;
 
 import com.jabaraster.petshop.WebStarter;
 import com.jabaraster.petshop.WebStarter.Mode;
-import com.jabaraster.petshop.entity.ECart;
 import com.jabaraster.petshop.entity.EOrder;
 import com.jabaraster.petshop.entity.EPet;
 import com.jabaraster.petshop.entity.EPetCategory;
@@ -100,15 +99,11 @@ public class PetServiceImplTest {
         final EPetImageData data = new EPetImageData(pet, new InputStreamReadableData("data", "image/png", 0, new ByteArrayInputStream(
                 Empty.BYTE_ARRAY)));
 
-        final EOrder order = new EOrder(pet);
-
-        final ECart cart = new ECart(user);
-        cart.addOrder(order);
+        final EOrder order = new EOrder(user, pet);
 
         em.persist(category);
         em.persist(pet);
         em.persist(user);
-        em.persist(cart);
         em.persist(data);
         em.persist(order);
 

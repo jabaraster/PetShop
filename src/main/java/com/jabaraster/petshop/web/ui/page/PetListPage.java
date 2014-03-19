@@ -27,7 +27,7 @@ import com.jabaraster.petshop.entity.EPet;
 import com.jabaraster.petshop.entity.EPetImageData;
 import com.jabaraster.petshop.entity.EPet_;
 import com.jabaraster.petshop.model.LoginUser;
-import com.jabaraster.petshop.service.ICartService;
+import com.jabaraster.petshop.service.IOrderService;
 import com.jabaraster.petshop.service.IPetService;
 import com.jabaraster.petshop.web.LoginUserHolder;
 import com.jabaraster.petshop.web.ui.component.CartPanel;
@@ -44,7 +44,7 @@ public class PetListPage extends RestrictedPageBase {
     @Inject
     IPetService                 petService;
     @Inject
-    ICartService                cartService;
+    IOrderService                cartService;
 
     private final Handler       handler          = new Handler();
 

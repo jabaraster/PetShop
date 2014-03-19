@@ -35,6 +35,13 @@ public class EOrder extends EntityBase<EOrder> {
      */
     @JoinColumn(nullable = false)
     @ManyToOne
+    protected EUser           user;
+
+    /**
+     * 
+     */
+    @JoinColumn(nullable = false)
+    @ManyToOne
     protected EPet            pet;
 
     /**
@@ -44,10 +51,11 @@ public class EOrder extends EntityBase<EOrder> {
     protected int             quantity;
 
     /**
+     * @param pUser -
      * @param pPet -
      */
-    public EOrder(final EPet pPet) {
-        this(pPet, 1);
+    public EOrder(final EUser pUser, final EPet pPet) {
+        this(pUser, pPet, 1);
     }
 
     /**
