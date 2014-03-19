@@ -32,9 +32,8 @@ import com.jabaraster.petshop.service.IPetService;
 
 /**
  * @author jabaraster
- * @param <D>
  */
-public class PetServiceImpl<D> extends JpaDaoBase implements IPetService {
+public class PetServiceImpl extends JpaDaoBase implements IPetService {
     private static final long         serialVersionUID = -7494555889492182446L;
 
     private final IPetCategoryService petCategoryService;
@@ -66,6 +65,26 @@ public class PetServiceImpl<D> extends JpaDaoBase implements IPetService {
         } catch (final NotFound e) {
             throw ExceptionUtil.rethrow(e);
         }
+    }
+
+    /**
+     * @see com.jabaraster.petshop.service.IPetService#delete(com.jabaraster.petshop.entity.EPet)
+     */
+    @Override
+    public void delete(final EPet pPet) {
+        ArgUtil.checkNull(pPet, "pPet"); //$NON-NLS-1$
+        if (!pPet.isPersisted()) {
+            return;
+        }
+
+        final EntityManager em = getEntityManager();
+
+        em.remove(em.merge(pPet));
+
+        // TODO カートから注文を消さなければいけない.
+
+        em.createNamedQuery("deleteOrderByPet").setParameter("pet", pPet).executeUpdate(); //$NON-NLS-1$ //$NON-NLS-2$
+        em.createNamedQuery("deletePetImageDataByPet").setParameter("pet", pPet).executeUpdate(); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**

@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +26,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Entity
+@NamedQuery(name = "deleteOrderByPet", query = "delete from EOrder e where e.pet = :pet")
 public class EOrder extends EntityBase<EOrder> {
     private static final long serialVersionUID = -5957688491190428354L;
 

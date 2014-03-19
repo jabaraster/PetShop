@@ -20,6 +20,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 
@@ -32,6 +33,7 @@ import org.apache.commons.codec.digest.DigestUtils;
  */
 @NoArgsConstructor
 @Entity
+@NamedQuery(name = "deletePetImageDataByPet", query = "delete from EPetImageData e where e.pet = :pet")
 public class EPetImageData extends EntityBase<EPetImageData> {
     private static final long serialVersionUID            = -5237376425396393851L;
 

@@ -2,7 +2,6 @@ package com.jabaraster.petshop.web.ui.page;
 
 import jabara.wicket.ComponentCssHeaderItem;
 import jabara.wicket.IconHeaderItem;
-import jabara.wicket.JavaScriptUtil;
 import jabara.wicket.Models;
 
 import java.util.List;
@@ -36,10 +35,11 @@ import com.jabaraster.petshop.web.ui.component.BodyCssHeaderItem;
 public abstract class WebPageBase extends WebPage {
     private static final long                        serialVersionUID  = -7105185519134177245L;
 
-    private static final CssResourceReference        REF_BOOTSTRAP_CSS = new CssResourceReference(WebPageBase.class, "bootstrap/css/bootstrap.css"); //$NON-NLS-1$
-    private static final CssResourceReference        REF_APP_CSS       = new CssResourceReference(WebPageBase.class, "App.css");                    //$NON-NLS-1$
+    private static final CssResourceReference        REF_BOOTSTRAP_CSS = new CssResourceReference(WebPageBase.class,
+                                                                               "bootstrap/css/bootstrap.min.css");              //$NON-NLS-1$
+    private static final CssResourceReference        REF_APP_CSS       = new CssResourceReference(WebPageBase.class, "App.css"); //$NON-NLS-1$
     private static final JavaScriptResourceReference REF_BOOTSTRAP_JS  = new JavaScriptResourceReference(WebPageBase.class,
-                                                                               "bootstrap/js/bootstrap.js");                                        //$NON-NLS-1$
+                                                                               "bootstrap/js/bootstrap.min.js");                //$NON-NLS-1$
 
     private Label                                    titleLabel;
     private Label                                    applicationName;
@@ -95,7 +95,6 @@ public abstract class WebPageBase extends WebPage {
         pResponse.render(CssHeaderItem.forReference(REF_BOOTSTRAP_CSS));
         pResponse.render(CssHeaderItem.forReference(REF_APP_CSS));
 
-        pResponse.render(JavaScriptHeaderItem.forReference(JavaScriptUtil.JQUERY_1_9_1_REFERENCE));
         pResponse.render(JavaScriptHeaderItem.forReference(REF_BOOTSTRAP_JS));
 
         pResponse.render(ComponentCssHeaderItem.forType(WebPageBase.class));

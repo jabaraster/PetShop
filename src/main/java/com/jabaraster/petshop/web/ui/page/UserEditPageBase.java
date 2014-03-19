@@ -21,9 +21,7 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
-import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.PasswordTextField;
@@ -33,8 +31,6 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.request.resource.CssResourceReference;
-import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.util.string.StringValueConversionException;
 
 import com.jabaraster.petshop.entity.ELoginPassword_;
@@ -49,34 +45,29 @@ import com.jabaraster.petshop.web.ui.component.BodyCssHeaderItem;
  */
 @SuppressWarnings("synthetic-access")
 public abstract class UserEditPageBase extends RestrictedPageBase {
-    private static final long                        serialVersionUID         = 7454930682959012116L;
-
-    private static final CssResourceReference        CSS_REF_BOOTSTRAP_SWITCH = new CssResourceReference(PetListPage.class,
-                                                                                      "bootstrapSwitch/css/bootstrap-switch.min.css"); //$NON-NLS-1$
-    private static final JavaScriptResourceReference JS_REF_BOOTSTRAP_SWITCH  = new JavaScriptResourceReference(PetListPage.class,
-                                                                                      "bootstrapSwitch/js/bootstrap-switch.min.js");  //$NON-NLS-1$
+    private static final long   serialVersionUID = 7454930682959012116L;
 
     /**
      * 
      */
-    protected final EUser                            userValue;
+    protected final EUser       userValue;
 
-    private final PasswordValue                      passwordValue            = new PasswordValue();
+    private final PasswordValue passwordValue    = new PasswordValue();
 
     @Inject
-    IUserService                                     userService;
+    IUserService                userService;
 
-    private final Handler                            handler                  = new Handler();
+    private final Handler       handler          = new Handler();
 
-    private FeedbackPanel                            feedback;
+    private FeedbackPanel       feedback;
 
-    private Form<?>                                  form;
-    private BeanEditor<EUser>                        editor;
-    private PasswordTextField                        password;
-    private FeedbackPanel                            passwordFeedback;
-    private PasswordTextField                        passwordConfirmation;
-    private FeedbackPanel                            passwordConfirmationFeedback;
-    private AjaxButton                               submitter;
+    private Form<?>             form;
+    private BeanEditor<EUser>   editor;
+    private PasswordTextField   password;
+    private FeedbackPanel       passwordFeedback;
+    private PasswordTextField   passwordConfirmation;
+    private FeedbackPanel       passwordConfirmationFeedback;
+    private AjaxButton          submitter;
 
     /**
      * 
@@ -114,15 +105,9 @@ public abstract class UserEditPageBase extends RestrictedPageBase {
         super.renderHead(pResponse);
 
         pResponse.render(BodyCssHeaderItem.get());
-
         pResponse.render(ComponentCssHeaderItem.forType(UserEditPageBase.class));
-
-        pResponse.render(CssHeaderItem.forReference(CSS_REF_BOOTSTRAP_SWITCH));
-        pResponse.render(JavaScriptHeaderItem.forReference(JS_REF_BOOTSTRAP_SWITCH));
-
-        ValidationReferences.render(pResponse);
-
         pResponse.render(ComponentJavaScriptHeaderItem.minimizedForType(UserEditPageBase.class));
+
         try {
             JavaScriptUtil.addFocusScript(pResponse, getEditor().findInputComponent(EUser_.userId.getName()).getFirstFormComponent());
         } catch (final NotFound e) {

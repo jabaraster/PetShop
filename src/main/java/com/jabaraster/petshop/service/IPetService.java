@@ -75,4 +75,9 @@ public interface IPetService {
      * @throws NotFound -
      */
     String findImageDataHashByImageDataId(final long pPetImageDataId) throws NotFound;
+
+    /**
+     * @param pPet -
+     */
+    void delete(final EPet pPet);
 }

@@ -29,6 +29,7 @@ import com.jabaraster.petshop.entity.EPet;
 import com.jabaraster.petshop.entity.EPetImageData;
 import com.jabaraster.petshop.model.LoginUser;
 import com.jabaraster.petshop.web.LoginUserHolder;
+import com.jabaraster.petshop.web.ui.page.PetDeletePage;
 import com.jabaraster.petshop.web.ui.page.PetEditPage;
 
 /**
@@ -50,6 +51,7 @@ public class PetPanel extends Panel {
 
     private WebMarkupContainer  administrationMenuContainer;
     private Link<?>             goEdit;
+    private Link<?>             goDelete;
 
     private IAjaxCallback       onThrowToCart    = NullAjaxCallback.GLOBAL;
 
@@ -95,6 +97,7 @@ public class PetPanel extends Panel {
                 }
             };
             this.administrationMenuContainer.add(getGoEdit());
+            this.administrationMenuContainer.add(getGoDelete());
         }
         return this.administrationMenuContainer;
     }
@@ -122,6 +125,14 @@ public class PetPanel extends Panel {
             this.form.add(getAdministrationMenuContainer());
         }
         return this.form;
+    }
+
+    private Link<?> getGoDelete() {
+        if (this.goDelete == null) {
+            final PageParameters param = PetDeletePage.createParmater(this.pet.getId().longValue());
+            this.goDelete = new BookmarkablePageLink<>("goDelete", PetDeletePage.class, param); //$NON-NLS-1$
+        }
+        return this.goDelete;
     }
 
     private Link<?> getGoEdit() {

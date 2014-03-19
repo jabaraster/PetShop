@@ -34,14 +34,15 @@ import com.google.inject.Injector;
 import com.jabaraster.petshop.web.ui.page.AdministrationPageBase;
 import com.jabaraster.petshop.web.ui.page.LoginPage;
 import com.jabaraster.petshop.web.ui.page.LogoutPage;
+import com.jabaraster.petshop.web.ui.page.PetDeletePage;
 import com.jabaraster.petshop.web.ui.page.PetEditPage;
 import com.jabaraster.petshop.web.ui.page.PetListPage;
 import com.jabaraster.petshop.web.ui.page.PetNewPage;
 import com.jabaraster.petshop.web.ui.page.RestrictedPageBase;
 import com.jabaraster.petshop.web.ui.page.UserDeletePage;
-import com.jabaraster.petshop.web.ui.page.UserNewPage;
-import com.jabaraster.petshop.web.ui.page.UserListPage;
 import com.jabaraster.petshop.web.ui.page.UserEditPage;
+import com.jabaraster.petshop.web.ui.page.UserListPage;
+import com.jabaraster.petshop.web.ui.page.UserNewPage;
 import com.jabaraster.petshop.web.ui.page.WebPageBase;
 
 /**
@@ -196,6 +197,7 @@ public class WicketApplication extends WebApplication {
         this.mountPage("pet/index", PetListPage.class);
         this.mountPage("pet/new", PetNewPage.class);
         this.mountPage("pet/edit", PetEditPage.class);
+        this.mountPage("pet/delete", PetDeletePage.class);
 
         this.mountPage("user/", UserListPage.class);
         this.mountPage("user/index", UserListPage.class);
